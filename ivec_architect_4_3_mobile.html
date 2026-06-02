@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IVEC アーキテクトクラス｜4.3 テスト評価</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+  --accent:#e6a817;--accent2:#3b82f6;--accent3:#10b981;--danger:#f87171;
+  --text:#e6edf3;--text-muted:#8b949e;--text-dim:#586069;
+  --purple:#a78bfa;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8;-webkit-tap-highlight-color:transparent}
+
+/* ── HEADER (mobile-first) ── */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 .8rem;position:sticky;top:0;z-index:100;display:flex;flex-direction:column;align-items:stretch}
+.header-top{display:flex;align-items:center;gap:.7rem;height:50px}
+.logo{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.15em;font-weight:700;text-transform:uppercase;border:1px solid var(--accent);padding:3px 7px;border-radius:3px;flex-shrink:0}
+.header-title{font-size:.78rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.header-title span{color:var(--text);font-weight:500}
+.tab-nav{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border)}
+.tab-btn{background:transparent;border:none;border-right:1px solid var(--border);color:var(--text-muted);padding:10px 4px;font-size:.78rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;text-align:center;line-height:1.3}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:var(--accent);color:#000;font-weight:700}
+
+.container{max-width:920px;margin:0 auto;padding:1rem .9rem 5rem}
+
+/* ── SECTION NAV ── */
+.section-nav{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.sec-btn{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:7px 11px;font-size:.78rem;border-radius:20px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .2s;-webkit-tap-highlight-color:transparent;min-height:36px}
+.sec-btn:active,.sec-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(230,168,23,.08)}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── TEXTBOOK ── */
+.chapter-header{margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.chapter-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem}
+.chapter-title{font-family:'Noto Serif JP',serif;font-size:1.45rem;font-weight:700;color:var(--text);line-height:1.4}
+.chapter-desc{margin-top:.7rem;color:var(--text-muted);font-size:.88rem}
+
+.section-block{margin-bottom:2rem}
+.section-header{display:flex;align-items:baseline;gap:.7rem;margin-bottom:1rem}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent2);font-weight:700;letter-spacing:.1em;white-space:nowrap}
+.section-title{font-family:'Noto Serif JP',serif;font-size:1.05rem;font-weight:700;color:var(--text);border-bottom:2px solid var(--accent2);padding-bottom:4px}
+
+.prose{color:var(--text);margin-bottom:1.1rem}
+.prose p{margin-bottom:.85rem;font-size:.92rem;line-height:1.85}
+
+.io-grid{display:grid;grid-template-columns:1fr;gap:.7rem;margin:1rem 0}
+.io-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem}
+.io-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem;font-weight:700}
+.io-label.in{color:var(--accent2)}
+.io-label.out{color:var(--accent3)}
+.io-list{list-style:none;font-size:.85rem;color:var(--text-muted)}
+.io-list li{padding:3px 0;line-height:1.6}
+.io-list li::before{content:'› ';color:var(--text-dim)}
+
+.task-box{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:.9rem 1rem;margin:.9rem 0}
+.task-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem;font-weight:700}
+.task-text{font-size:.88rem;color:var(--text);font-weight:500;line-height:1.85}
+
+.point-box{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:.85rem 1rem;margin:.8rem 0}
+.point-label{font-size:.72rem;color:var(--accent2);font-weight:700;letter-spacing:.08em;margin-bottom:.4rem}
+.point-text{font-size:.87rem;color:#a8c0e0;line-height:1.8}
+
+.tmap-box{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.25);border-radius:8px;padding:.85rem 1rem;margin:.8rem 0}
+.tmap-label{font-size:.72rem;color:var(--purple);font-weight:700;letter-spacing:.08em;margin-bottom:.4rem}
+.tmap-text{font-size:.87rem;color:#c4b5fd;line-height:1.8}
+
+.page-break{height:1px;background:var(--border);margin:2rem 0}
+
+/* ── QUIZ ── */
+.quiz-header{margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.quiz-meta{display:flex;gap:1rem;margin-top:.8rem;flex-wrap:wrap}
+.quiz-stat{font-size:.82rem;color:var(--text-muted)}
+.quiz-stat span{color:var(--text);font-weight:600}
+.q-section-title{font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:1.2rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.q-section-title.mt{margin-top:2rem}
+
+.question-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1rem;margin-bottom:1rem}
+.q-meta{display:flex;gap:.5rem;margin-bottom:.7rem;align-items:center}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-dim);font-weight:700}
+.q-type{font-size:.65rem;padding:3px 8px;border-radius:12px;font-weight:700}
+.q-type.choice{background:rgba(59,130,246,.15);color:var(--accent2)}
+.q-type.fill{background:rgba(230,168,23,.15);color:var(--accent)}
+.q-type.desc{background:rgba(248,113,113,.15);color:var(--danger)}
+.q-section-tag{font-size:.65rem;color:var(--text-dim);margin-left:auto}
+.q-text{font-size:.92rem;color:var(--text);margin-bottom:1rem;line-height:1.8;font-weight:500}
+
+.choices{display:flex;flex-direction:column;gap:.55rem}
+.choice-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;text-align:left;color:var(--text-muted);font-size:.88rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;display:flex;gap:.8rem;align-items:flex-start;min-height:48px;-webkit-tap-highlight-color:transparent}
+.choice-btn:active:not(:disabled){border-color:var(--accent2);color:var(--text);background:rgba(59,130,246,.06)}
+.choice-label{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:2px}
+.choice-btn.correct{border-color:var(--accent3)!important;background:rgba(16,185,129,.1)!important;color:var(--text)!important}
+.choice-btn.incorrect{border-color:var(--danger)!important;background:rgba(248,113,113,.08)!important}
+.choice-btn.revealed{pointer-events:none}
+
+.fill-area{display:flex;flex-direction:column;gap:.55rem;margin-top:.6rem}
+.fill-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;color:var(--text);font-size:16px;font-family:'Noto Sans JP',sans-serif;outline:none;width:100%;transition:border-color .2s}
+.fill-input:focus{border-color:var(--accent2)}
+.fill-input.correct{border-color:var(--accent3);background:rgba(16,185,129,.07)}
+.fill-input.incorrect{border-color:var(--danger);background:rgba(248,113,113,.06)}
+
+.desc-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;color:var(--text);font-size:16px;font-family:'Noto Sans JP',sans-serif;outline:none;resize:vertical;min-height:100px;transition:border-color .2s;line-height:1.7}
+.desc-textarea:focus{border-color:var(--accent2)}
+
+.check-btn{margin-top:.9rem;background:var(--accent2);border:none;color:#fff;padding:11px 22px;border-radius:8px;font-size:.88rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-weight:700;transition:opacity .2s;width:100%;min-height:44px;-webkit-tap-highlight-color:transparent}
+.check-btn:active{opacity:.8}
+
+.answer-reveal{margin-top:.9rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:.9rem 1rem;display:none}
+.answer-reveal.show{display:block}
+.answer-label{font-size:.72rem;color:var(--accent3);font-weight:700;letter-spacing:.08em;margin-bottom:.4rem}
+.answer-text{font-size:.87rem;color:#9fcfb8;line-height:1.8}
+
+/* ── QA ── */
+.qa-list{display:flex;flex-direction:column;gap:.8rem}
+.qa-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.qa-q{padding:1rem;display:flex;gap:.8rem;cursor:pointer;align-items:flex-start;transition:background .15s;-webkit-tap-highlight-color:transparent;min-height:52px}
+.qa-q:active{background:var(--surface2)}
+.qa-q-icon{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:700;flex-shrink:0;margin-top:2px}
+.qa-q-text{font-size:.9rem;color:var(--text);font-weight:500;line-height:1.7}
+.qa-a{padding:.9rem 1rem 1rem 1rem;background:rgba(16,185,129,.04);border-top:1px solid var(--border);display:none}
+.qa-a.open{display:block}
+.qa-a-text{font-size:.88rem;color:#9fcfb8;line-height:1.85}
+
+/* ── DESKTOP overrides ── */
+@media(min-width:640px){
+  header{flex-direction:row;align-items:center;padding:0 1.5rem;height:56px}
+  .header-top{height:auto;flex:1}
+  .tab-nav{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;border-top:none;margin-left:auto}
+  .tab-btn{padding:6px 16px;border-right:none}
+  .tab-btn:not(:last-child){border-right:1px solid var(--border)}
+  .container{padding:2rem 1.5rem 6rem}
+  .io-grid{grid-template-columns:1fr 1fr}
+  .fill-area{flex-direction:row;align-items:center}
+  .fill-input{width:auto;font-size:.87rem}
+  .check-btn{width:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">IVEC</div>
+    <div class="header-title">アーキテクトクラス｜<span>4.3 テスト評価</span></div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('textbook',this)">📖 解説</button>
+    <button class="tab-btn" onclick="switchTab('quiz',this)">✏️ 問題集</button>
+    <button class="tab-btn" onclick="switchTab('qa',this)">💡 一問一答</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="section-nav">
+    <button class="sec-btn active" onclick="switchSection('all',this)">すべて</button>
+    <button class="sec-btn" onclick="switchSection('4-3-1',this)">4.3.1 報告書準備</button>
+    <button class="sec-btn" onclick="switchSection('4-3-2',this)">4.3.2 情報収集</button>
+    <button class="sec-btn" onclick="switchSection('4-3-3',this)">4.3.3 活動分析</button>
+    <button class="sec-btn" onclick="switchSection('4-3-4',this)">4.3.4 達成率評価</button>
+    <button class="sec-btn" onclick="switchSection('4-3-5',this)">4.3.5 指標比較</button>
+    <button class="sec-btn" onclick="switchSection('4-3-6',this)">4.3.6 改善点抽出</button>
+    <button class="sec-btn" onclick="switchSection('4-3-7',this)">4.3.7 改善策検討</button>
+    <button class="sec-btn" onclick="switchSection('4-3-8',this)">4.3.8 報告書作成</button>
+    <button class="sec-btn" onclick="switchSection('4-3-9',this)">4.3.9 報告書開示</button>
+  </div>
+
+  <!-- ===== TEXTBOOK ===== -->
+  <div id="tab-textbook" class="tab-content active">
+    <div class="chapter-header">
+      <div class="chapter-label">Chapter 4.3 — 汎用テスト知識・スキル</div>
+      <div class="chapter-title">テスト評価</div>
+      <div class="chapter-desc">テスト報告書を含むテスト活動の全情報・結果を用いてテスト活動の達成度合いを分析・評価する。ポストモーテムを行いプロジェクト成果および改善点を展開する。</div>
+    </div>
+
+    <!-- 4.3.1 -->
+    <div class="section-block" data-sec="4-3-1">
+      <div class="section-header"><div class="section-num">4.3.1</div><div class="section-title">テスト報告書を準備する</div></div>
+      <div class="prose">
+        <p>テスト報告フェーズで作成したテスト報告書を準備する。テスト報告書に加え、<strong>レビュー結果などの付帯情報</strong>も合わせて用意する。入手した情報は<strong>時系列やイベントごとに整理</strong>して分析しやすくする。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list"><li>テスト報告に関する入手物一覧表またはチェックシート</li></ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>テスト報告書一式</li>
+          <li>スケジュール（工程）の予定／実績</li>
+          <li>工数の予定／実績データ</li>
+          <li>各アウトプットのレビュー結果</li>
+          <li>参考にできる他プロジェクトの情報</li>
+          <li>前回プロジェクトの情報</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        ① 該当のテスト報告書を入手する。入手時には<strong>テストの計画と実績・変更履歴・レビュー結果</strong>など、チェックシートに基づき必要な情報の有無を確認する<br>
+        ② 入手した情報は<strong>テスト活動の時系列やイベントごとに整理</strong>する<br>
+        ③ 参考になる<strong>過去の類似プロジェクトのデータ・前回からの引継ぎ事項（前回の改善事項）</strong>も用意する
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.2 -->
+    <div class="section-block" data-sec="4-3-2">
+      <div class="section-header"><div class="section-num">4.3.2</div><div class="section-title">テスト活動全般の情報を収集する</div></div>
+      <div class="prose">
+        <p>テスト活動に関するプロジェクトの情報を広く収集する。テスト報告書だけでなく、<strong>計画・実績（エビデンス）・変更要求</strong>なども収集対象となる。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list"><li>テスト報告に関する入手物一覧表またはチェックシート</li></ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT（活動情報事例）</div><ul class="io-list">
+          <li>マスターテスト計画書</li>
+          <li>プロジェクト計画書</li>
+          <li>テスト要求分析書（スコープ）</li>
+          <li>レベルテスト計画書</li>
+          <li>各レビュー結果</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">収集するプロジェクト情報の事例</div><div class="task-text">
+        テストスコープ、テストタスク、コスト計画と実績、品質計画と実績、組織計画と実績（要員の調達・確保・トレーニング計画と実績）、コミュニケーション計画、<strong>リスク管理計画と実績</strong>（リスク定義書・対策計画書）、調達計画と実績、プロジェクト改善計画（目標）
+      </div></div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        ① 該当のテスト活動の情報をチェックシートに基づいて入手する<br>
+        ② 入手した情報は<strong>テスト活動の時系列やイベントごとに整理</strong>する
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.3 -->
+    <div class="section-block" data-sec="4-3-3">
+      <div class="section-header"><div class="section-num">4.3.3</div><div class="section-title">テスト活動を分析する</div></div>
+      <div class="prose">
+        <p>テスト活動の分析には2種類ある。</p>
+        <p>①<strong>テスト活動の評価分析</strong>：テスト計画と実績の対比、プロジェクトへの変更要求とその対応、テスト活動中に発生したトラブルとリカバリなどの分析</p>
+        <p>②<strong>技術資産の蓄積のための分析</strong>：テストアーキテクチャ設計・テスト詳細設計・テスト実装・テスト実行・テスト報告の成果物に対して実績データなどを分析</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list">
+          <li>テスト活動への改善施策（プロジェクト改善計画書等）</li>
+          <li>テスト報告書一式</li>
+          <li>テスト活動情報一式</li>
+        </ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>テスト設計情報</li>
+          <li>テスト実績データ</li>
+          <li>比較データ</li>
+          <li>プロセス成熟度判定結果</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        ① テスト活動を時系列に整理し、テスト活動に関する経験（<strong>暗黙知・ノウハウ</strong>）を定量的および定性的な情報として記録する。テストリポジトリを構築している場合はデータを登録する<br>
+        ② テスト活動の<strong>定量的データ（実績データ）と基準となる指標のデータを比較</strong>して、テスト活動における<strong>ボトルネックを抽出</strong>する<br>
+        ③ 標準テストプロセスとの比較や<strong>TMap</strong>などを利用して<strong>プロセスの成熟度を計測</strong>する
+      </div></div>
+      <div class="point-box"><div class="point-label">🎯 学習のポイント</div><div class="point-text">ボトルネックを抽出することで、テスト計画と実績の差異を指標を用いて数値的なデータから分析できる。例：テスト設計した項目数の予実を確認し、大幅な差異がある場合はなぜ差異が出たかを分析し、<strong>見積精度の改善</strong>につなげる。</div></div>
+      <div class="tmap-box"><div class="tmap-label">📘 TMap とは</div><div class="tmap-text">TMap（Test Management approach for structured testing）は、20のキーエリアを13のスケールで構造化したテストプロセスの方法論。SOGETI社によって提案され、テストプロセス改善に用いられる。</div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.4 -->
+    <div class="section-block" data-sec="4-3-4">
+      <div class="section-header"><div class="section-num">4.3.4</div><div class="section-title">前回の改善項目の達成率を評価する</div></div>
+      <div class="prose">
+        <p>テスト活動に対する改善計画に基づいて、改善項目の達成度について<strong>数値的な分析</strong>を行う。担当者の感想だけでなく<strong>実績データとの比較による客観的な評価</strong>が重要。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list">
+          <li>プロジェクト改善計画書</li>
+          <li>改善のねらい（効果）</li>
+          <li>改善項目（目標）</li>
+          <li>改善のタスク</li>
+        </ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>改善目標の達成率</li>
+          <li>改善のねらいの達成度合い</li>
+          <li>改善のタスクの実施程度</li>
+          <li>改善未達成項目</li>
+          <li>新たな改善項目</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        ① プロジェクト改善計画で立案した改善項目とテスト活動の実績データを比較し、<strong>達成率を算出</strong>する<br>
+        ② 改善のねらい（効果）に対して改善タスクの実施程度を考慮して、<strong>定性的な目的の達成度合いを判定</strong>する<br>
+        ③ 改善が不十分な項目や<strong>新たな改善すべき項目を抽出</strong>する
+      </div></div>
+      <div class="point-box"><div class="point-label">🎯 学習のポイント</div><div class="point-text">テスト評価作業では、次回のプロジェクトを効率的に行えるよう評価する。担当者からの意見・感想（アンケート等）だけでなく、<strong>数値的に実績データと比較することで客観的に評価</strong>する。</div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.5 -->
+    <div class="section-block" data-sec="4-3-5">
+      <div class="section-header"><div class="section-num">4.3.5</div><div class="section-title">分析結果と評価指標を比較する</div></div>
+      <div class="prose">
+        <p>改善の達成率・達成度合いからプロジェクト改善の目的との差異を比較し、<strong>満足度（充足度）を判定</strong>する。評価指標の見直しも行う。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list">
+          <li>改善目標の達成率</li>
+          <li>改善のねらいの達成度合い</li>
+        </ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>プロジェクト改善の全体達成率</li>
+          <li>評価指標の見直し項目</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        プロジェクト改善の目的との差異を、改善目標の達成率や改善のねらいの達成度合いで<strong>満足度（充足度）を判定</strong>する。プロジェクトの改善の満足度から、<strong>評価指標の見直し</strong>を行う。
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.6 -->
+    <div class="section-block" data-sec="4-3-6">
+      <div class="section-header"><div class="section-num">4.3.6</div><div class="section-title">改善点（良かった点・悪かった点）を抽出する</div></div>
+      <div class="prose">
+        <p>プロジェクト関係者から成果および反省点を<strong>広く収集</strong>する。役割の異なる関係者でのギャップ分析も行う。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list"><li>プロジェクト成果および反省点のアンケート</li></ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>改善点（良かった点・悪かった点）</li>
+          <li>プロジェクト成果一覧／詳細</li>
+          <li>プロジェクト反省点一覧／詳細</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        ① プロジェクトの関係者から広く成果および反省点を収集する<br>
+        ② <strong>役割の異なる関係者</strong>で、プロジェクトに対する成果・反省点の<strong>ギャップを分析</strong>する<br>
+        ③ 分析した結果を<strong>一覧化して詳細を記録</strong>する
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.7 -->
+    <div class="section-block" data-sec="4-3-7">
+      <div class="section-header"><div class="section-num">4.3.7</div><div class="section-title">改善策を検討する</div></div>
+      <div class="prose">
+        <p>プロジェクトの改善点の<strong>影響度・効果などを分析</strong>し、優先度や対策を検討して次期プロジェクトへ展開する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list">
+          <li>改善点（良かった点・悪かった点）</li>
+          <li>プロジェクト成果一覧／詳細</li>
+          <li>プロジェクト反省点一覧／詳細</li>
+        </ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list"><li>改善処置対策書</li></ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        プロジェクトの反省点・改善点の<strong>影響度合いを分析</strong>する。<strong>影響度合いが高く、発生する確率／回数が多い項目の優先度を高く設定</strong>し、根治対策または回避方策を検討する。また改善点に対して<strong>再発防止策</strong>を検討する。
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.8 -->
+    <div class="section-block" data-sec="4-3-8">
+      <div class="section-header"><div class="section-num">4.3.8</div><div class="section-title">テスト評価報告書を作成する</div></div>
+      <div class="prose">
+        <p>テスト活動の分析結果・評価結果・改善点などを<strong>広く水平展開</strong>できるよう体系的に整理して、テスト評価報告書を作成する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list">
+          <li>テスト評価の分析・改善評価結果</li>
+          <li>テスト報告書</li>
+          <li>テスト活動の分析結果</li>
+          <li>改善計画と達成率・改善分析結果</li>
+        </ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>テスト評価報告書</li>
+          <li>テスト活動改善計画</li>
+          <li>テスト活動計画対比分析</li>
+          <li>達成指標（達成項目／未達成項目）</li>
+          <li>次期改善点一覧</li>
+          <li>技術蓄積情報一覧（保管情報）</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        該当するテスト活動の<strong>改善施策の視点</strong>で、テスト活動の分析結果や評価結果を整理する。各評価結果は<strong>関連性が明確になるような書式</strong>で文書化する。
+      </div></div>
+    </div>
+    <div class="page-break"></div>
+
+    <!-- 4.3.9 -->
+    <div class="section-block" data-sec="4-3-9">
+      <div class="section-header"><div class="section-num">4.3.9</div><div class="section-title">テスト評価報告書を開示する</div></div>
+      <div class="prose">
+        <p>テスト評価報告会などを通じてテスト評価報告書を関係者に開示する。テスト活動の技術情報・改善成果・失敗事例などは<strong>他のテスト活動のプロジェクトにも広く水平展開</strong>する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card"><div class="io-label in">INPUT</div><ul class="io-list"><li>テスト評価報告書</li></ul></div>
+        <div class="io-card"><div class="io-label out">OUTPUT</div><ul class="io-list">
+          <li>開示先一覧</li>
+          <li>テスト評価報告書へのコメント／指摘事項</li>
+          <li>報告会の議事録</li>
+          <li>次回プロジェクトへの引継ぎ資料</li>
+        </ul></div>
+      </div>
+      <div class="task-box"><div class="task-label">実施タスク</div><div class="task-text">
+        テスト評価報告会を実施して広くテスト評価報告書を開示する。報告会を通じてテスト評価に関するコメントや指摘事項を収集し、<strong>次回プロジェクトへの引継ぎ資料</strong>として報告会の内容（指摘された点など）を<strong>議事録</strong>にまとめる。
+      </div></div>
+    </div>
+  </div><!-- /tab-textbook -->
+
+  <!-- ===== QUIZ ===== -->
+  <div id="tab-quiz" class="tab-content">
+    <div class="quiz-header">
+      <div class="chapter-label">問題集 — 4.3 テスト評価</div>
+      <div class="chapter-title" style="font-family:'Noto Serif JP',serif;font-size:1.5rem;">練習問題（全18問）</div>
+      <div class="quiz-meta">
+        <div class="quiz-stat">四択: <span>8問</span></div>
+        <div class="quiz-stat">穴埋め: <span>5問</span></div>
+        <div class="quiz-stat">記述: <span>5問</span></div>
+      </div>
+    </div>
+
+    <div class="q-section-title">■ 四択問題</div>
+
+    <!-- Q01 -->
+    <div class="question-card" data-sec="4-3-1">
+      <div class="q-meta"><span class="q-num">Q01</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.1</span></div>
+      <div class="q-text">テスト報告書を準備する際に「参考にできる過去の類似プロジェクトのデータ」も用意する主な目的として最も適切なものはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','C')"><span class="choice-label">A</span>テストベースのバージョンを比較するため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','C')"><span class="choice-label">B</span>ステークホルダへのインタビュー内容を補完するため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','C')"><span class="choice-label">C</span>テスト活動の評価・分析の参考として活用するため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','C')"><span class="choice-label">D</span>次期プロジェクトのスケジュールを策定するため</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：C</div><div class="answer-text">過去の類似プロジェクトのデータや前回からの引継ぎ事項（前回の改善事項）は、テスト活動の評価・分析の参考として活用するために用意する。</div></div>
+    </div>
+
+    <!-- Q02 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q02</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">テスト活動の分析において「ボトルネックを抽出する」目的として正しいものはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','B')"><span class="choice-label">A</span>テスト環境の構築コストを削減するため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','B')"><span class="choice-label">B</span>テスト計画と実績の差異を数値的なデータから分析して改善につなげるため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','B')"><span class="choice-label">C</span>次期プロジェクトのテスト要員を確保するため</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','B')"><span class="choice-label">D</span>プロダクトリスクを特定するため</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：B</div><div class="answer-text">ボトルネックを抽出することで、テスト計画と実績の差異を指標を用いて数値的なデータから分析し、改善につなげることができる。例：テスト設計した項目数の予実確認から見積精度の改善。</div></div>
+    </div>
+
+    <!-- Q03 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q03</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">TMap（Test Management approach for structured testing）の説明として正しいものはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','D')"><span class="choice-label">A</span>IVIA が提唱したテスト要求分析の方法論</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','D')"><span class="choice-label">B</span>ISO/IEC 29119で定義されたテストプロセスの標準</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','D')"><span class="choice-label">C</span>テスト自動化ツールの選定フレームワーク</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','D')"><span class="choice-label">D</span>20のキーエリアを13のスケールで構造化したテストプロセスの方法論でSOGETI社が提案</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：D</div><div class="answer-text">TMapはSOGETI社によって提案されたテストプロセスの方法論で、20のキーエリアを13のスケールで構造化している。テストプロセス改善に用いられる。</div></div>
+    </div>
+
+    <!-- Q04 -->
+    <div class="question-card" data-sec="4-3-4">
+      <div class="q-meta"><span class="q-num">Q04</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.4</span></div>
+      <div class="q-text">前回の改善項目の達成率を評価する際に、担当者からの意見・感想（アンケート等）に加えて重要視すべきことはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','C')"><span class="choice-label">A</span>ステークホルダの満足度調査</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','C')"><span class="choice-label">B</span>テスト担当者の個人評価</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','C')"><span class="choice-label">C</span>数値的に実績データと比較することで客観的に評価する</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','C')"><span class="choice-label">D</span>経営層へのヒアリング結果</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：C</div><div class="answer-text">テスト評価作業では担当者の意見・感想だけでなく、数値的に実績データと比較することで客観的に評価することが重要。これにより次回プロジェクトを効率的に行えるよう評価できる。</div></div>
+    </div>
+
+    <!-- Q05 -->
+    <div class="question-card" data-sec="4-3-5">
+      <div class="q-meta"><span class="q-num">Q05</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.5</span></div>
+      <div class="q-text">4.3.5「分析結果と評価指標を比較する」のOUTPUTとして正しいものはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','B')"><span class="choice-label">A</span>改善処置対策書・プロジェクト成果一覧</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','B')"><span class="choice-label">B</span>プロジェクト改善の全体達成率・評価指標の見直し項目</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','B')"><span class="choice-label">C</span>テスト評価報告書・次期改善点一覧</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','B')"><span class="choice-label">D</span>改善未達成項目・新たな改善項目</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：B</div><div class="answer-text">4.3.5のOUTPUTは「プロジェクト改善の全体達成率」と「評価指標の見直し項目」。改善処置対策書は4.3.7、改善未達成項目・新たな改善項目は4.3.4のOUTPUT。</div></div>
+    </div>
+
+    <!-- Q06 -->
+    <div class="question-card" data-sec="4-3-7">
+      <div class="q-meta"><span class="q-num">Q06</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.7</span></div>
+      <div class="q-text">改善策を検討する際に、優先度を高く設定すべき項目の条件として正しいものはどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','D')"><span class="choice-label">A</span>改善コストが低い項目</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','D')"><span class="choice-label">B</span>関係者からの指摘が多かった項目</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','D')"><span class="choice-label">C</span>前回プロジェクトから引き継がれた項目</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','D')"><span class="choice-label">D</span>影響度合いが高く、発生する確率／回数が多い項目</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：D</div><div class="answer-text">影響度合いが高く、発生する確率・回数が多い項目の優先度を高く設定し、根治対策または回避方策を検討する。また改善点に対して再発防止策を検討する。</div></div>
+    </div>
+
+    <!-- Q07 -->
+    <div class="question-card" data-sec="4-3-8">
+      <div class="q-meta"><span class="q-num">Q07</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.8</span></div>
+      <div class="q-text">テスト評価報告書作成において、各評価結果を文書化する際に注意すべき書式の条件はどれか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','C')"><span class="choice-label">A</span>できるだけ簡潔にまとめること</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','C')"><span class="choice-label">B</span>経営層にも理解できるような表現にすること</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','C')"><span class="choice-label">C</span>関連性が明確になるような書式で文書化すること</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','C')"><span class="choice-label">D</span>時系列順に記載すること</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：C</div><div class="answer-text">テスト評価報告書では「各評価結果は関連性が明確になるような書式で文書化する」ことが求められる。これにより水平展開が実施しやすくなる。</div></div>
+    </div>
+
+    <!-- Q08 -->
+    <div class="question-card" data-sec="4-3-9">
+      <div class="q-meta"><span class="q-num">Q08</span><span class="q-type choice">四択</span><span class="q-section-tag">4.3.9</span></div>
+      <div class="q-text">テスト評価報告書を開示する際に、テスト活動の技術情報・改善成果・失敗事例などをどのように扱うべきか。</div>
+      <div class="choices">
+        <button class="choice-btn" onclick="checkChoice(this,'A','D')"><span class="choice-label">A</span>社外秘として自プロジェクト内のみで共有する</button>
+        <button class="choice-btn" onclick="checkChoice(this,'B','D')"><span class="choice-label">B</span>成果のみを開示し、失敗事例は非公開とする</button>
+        <button class="choice-btn" onclick="checkChoice(this,'C','D')"><span class="choice-label">C</span>上長の承認を得た後に次期プロジェクトに引き継ぐ</button>
+        <button class="choice-btn" onclick="checkChoice(this,'D','D')"><span class="choice-label">D</span>他のテスト活動のプロジェクトにも広く水平展開する</button>
+      </div>
+      <div class="answer-reveal"><div class="answer-label">✅ 正解：D</div><div class="answer-text">テスト活動の技術情報・改善成果・失敗事例などは「他のテスト活動のプロジェクトにも広く水平展開する」ことがシラバスで求められている。</div></div>
+    </div>
+
+    <div class="q-section-title mt">■ 穴埋め問題</div>
+
+    <!-- Q09 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q09</span><span class="q-type fill">穴埋め</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">テスト活動の分析は2種類に大別できる。①テスト計画と実績の対比などを行う「テスト活動の（　　　）分析」と、②テスト活動の成果物に対して実績データなどを分析する「（　　　）のための分析」である。</div>
+      <div class="fill-area">
+        <input class="fill-input" id="f09a" type="text" placeholder="①">
+        <input class="fill-input" id="f09b" type="text" placeholder="②">
+        <button class="check-btn" onclick="checkFillN(['f09a','f09b'],['評価','技術資産の蓄積'])">確認</button>
+      </div>
+      <div class="answer-reveal" id="rev-f09"><div class="answer-label">✅ 正解</div><div class="answer-text">①評価（テスト活動の評価分析）　②技術資産の蓄積（技術資産の蓄積のための分析）</div></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q10</span><span class="q-type fill">穴埋め</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">TMapはSOGETI社によって提案されたテストプロセスの方法論で、（　①　）のキーエリアを（　②　）のスケールで構造化したものである。</div>
+      <div class="fill-area">
+        <input class="fill-input" id="f10a" type="text" placeholder="①（数字）">
+        <input class="fill-input" id="f10b" type="text" placeholder="②（数字）">
+        <button class="check-btn" onclick="checkFillN(['f10a','f10b'],['20','13'])">確認</button>
+      </div>
+      <div class="answer-reveal" id="rev-f10"><div class="answer-label">✅ 正解</div><div class="answer-text">①20（キーエリア）　②13（スケール）</div></div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="question-card" data-sec="4-3-4">
+      <div class="q-meta"><span class="q-num">Q11</span><span class="q-type fill">穴埋め</span><span class="q-section-tag">4.3.4</span></div>
+      <div class="q-text">前回の改善項目の達成率評価では、担当者のアンケートだけでなく（　　　）的に実績データと比較することで（　　　）的に評価することが重要である。</div>
+      <div class="fill-area">
+        <input class="fill-input" id="f11a" type="text" placeholder="①">
+        <input class="fill-input" id="f11b" type="text" placeholder="②">
+        <button class="check-btn" onclick="checkFillN(['f11a','f11b'],['数値','客観'])">確認</button>
+      </div>
+      <div class="answer-reveal" id="rev-f11"><div class="answer-label">✅ 正解</div><div class="answer-text">①数値的　②客観的</div></div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="question-card" data-sec="4-3-7">
+      <div class="q-meta"><span class="q-num">Q12</span><span class="q-type fill">穴埋め</span><span class="q-section-tag">4.3.7</span></div>
+      <div class="q-text">改善策を検討する際には、影響度合いが高く発生確率・回数が多い項目の（　　　）を高く設定し、（　　　）対策または（　　　）方策を検討する。</div>
+      <div class="fill-area">
+        <input class="fill-input" id="f12a" type="text" placeholder="①">
+        <input class="fill-input" id="f12b" type="text" placeholder="②">
+        <input class="fill-input" id="f12c" type="text" placeholder="③">
+        <button class="check-btn" onclick="checkFillN(['f12a','f12b','f12c'],['優先度','根治','回避'])">確認</button>
+      </div>
+      <div class="answer-reveal" id="rev-f12"><div class="answer-label">✅ 正解</div><div class="answer-text">①優先度　②根治　③回避（根治対策または回避方策）</div></div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="question-card" data-sec="4-3-9">
+      <div class="q-meta"><span class="q-num">Q13</span><span class="q-type fill">穴埋め</span><span class="q-section-tag">4.3.9</span></div>
+      <div class="q-text">テスト評価報告会を通じて、テスト評価に関するコメントや指摘事項を収集し、次回プロジェクトへの（　　　）資料として報告会の内容を（　　　）にまとめる。</div>
+      <div class="fill-area">
+        <input class="fill-input" id="f13a" type="text" placeholder="①">
+        <input class="fill-input" id="f13b" type="text" placeholder="②">
+        <button class="check-btn" onclick="checkFillN(['f13a','f13b'],['引継ぎ','議事録'])">確認</button>
+      </div>
+      <div class="answer-reveal" id="rev-f13"><div class="answer-label">✅ 正解</div><div class="answer-text">①引継ぎ（次回プロジェクトへの引継ぎ資料）　②議事録</div></div>
+    </div>
+
+    <div class="q-section-title mt">■ 記述問題</div>
+
+    <!-- Q14 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q14</span><span class="q-type desc">記述</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">テスト活動を分析する2種類の分析を、それぞれの目的と分析対象を含めて説明せよ。</div>
+      <textarea class="desc-textarea" placeholder="回答を入力…"></textarea>
+      <button class="check-btn" onclick="showAns('rev-q14')">解答例を見る</button>
+      <div class="answer-reveal" id="rev-q14"><div class="answer-label">📝 解答例</div><div class="answer-text">①テスト活動の評価分析：テスト計画と実績の対比、プロジェクトへの変更要求とその対応、テスト活動中に発生したトラブルとリカバリなど、テスト活動の結果に対して分析を行う。②技術資産の蓄積のための分析：テストアーキテクチャ設計・テスト詳細設計・テスト実装・テスト実行・テスト報告などの成果物に対して、実績データなどの分析を行う。</div></div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="question-card" data-sec="4-3-4">
+      <div class="q-meta"><span class="q-num">Q15</span><span class="q-type desc">記述</span><span class="q-section-tag">4.3.4</span></div>
+      <div class="q-text">前回の改善項目の達成率評価において、定量的評価と定性的評価をそれぞれどのように行うか説明せよ。</div>
+      <textarea class="desc-textarea" placeholder="回答を入力…"></textarea>
+      <button class="check-btn" onclick="showAns('rev-q15')">解答例を見る</button>
+      <div class="answer-reveal" id="rev-q15"><div class="answer-label">📝 解答例</div><div class="answer-text">定量的評価：プロジェクト改善計画で立案した改善項目とテスト活動の実績データを比較し、達成率を算出する。定性的評価：改善のねらい（効果）に対して改善のタスクの実施程度などを考慮して、目的の達成度合いを判定する。どちらも担当者の意見・感想だけでなく客観的な評価を重視する。</div></div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="question-card" data-sec="4-3-6">
+      <div class="q-meta"><span class="q-num">Q16</span><span class="q-type desc">記述</span><span class="q-section-tag">4.3.6</span></div>
+      <div class="q-text">改善点の抽出において「役割の異なる関係者でギャップを分析する」ことの意義を説明せよ。</div>
+      <textarea class="desc-textarea" placeholder="回答を入力…"></textarea>
+      <button class="check-btn" onclick="showAns('rev-q16')">解答例を見る</button>
+      <div class="answer-reveal" id="rev-q16"><div class="answer-label">📝 解答例</div><div class="answer-text">役割が異なる関係者（例：テスト担当者・開発者・マネージャーなど）では、同じプロジェクトに対して成果や反省点の認識が異なる場合がある。そのギャップを分析することで、一つの視点では見えなかった課題や改善点を広く収集・把握でき、より網羅的な改善につなげることができる。</div></div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="question-card" data-sec="4-3-3">
+      <div class="q-meta"><span class="q-num">Q17</span><span class="q-type desc">記述</span><span class="q-section-tag">4.3.3</span></div>
+      <div class="q-text">テスト活動の分析においてTMapを利用する目的を説明し、TMapの特徴を簡潔に述べよ。</div>
+      <textarea class="desc-textarea" placeholder="回答を入力…"></textarea>
+      <button class="check-btn" onclick="showAns('rev-q17')">解答例を見る</button>
+      <div class="answer-reveal" id="rev-q17"><div class="answer-label">📝 解答例</div><div class="answer-text">目的：標準テストプロセスとの比較を行いプロセスの成熟度を計測するために利用する。特徴：TMapはSOGETI社によって提案されたテストプロセスの方法論で、20のキーエリアを13のスケールで構造化している。テストプロセス改善に活用される。</div></div>
+    </div>
+
+    <!-- Q18 -->
+    <div class="question-card" data-sec="4-3-8">
+      <div class="q-meta"><span class="q-num">Q18</span><span class="q-type desc">記述</span><span class="q-section-tag">4.3.8</span></div>
+      <div class="q-text">テスト評価報告書を「水平展開」するとはどういうことか、テスト評価報告書開示（4.3.9）の内容を踏まえて説明せよ。</div>
+      <textarea class="desc-textarea" placeholder="回答を入力…"></textarea>
+      <button class="check-btn" onclick="showAns('rev-q18')">解答例を見る</button>
+      <div class="answer-reveal" id="rev-q18"><div class="answer-label">📝 解答例</div><div class="answer-text">水平展開とは、テスト活動の技術情報・改善成果・失敗事例などを自プロジェクト内にとどめず、他のテスト活動のプロジェクトにも広く共有・活用することを指す。4.3.9ではテスト評価報告会を実施して広く開示し、報告会でのコメントや指摘事項を収集し次回プロジェクトへの引継ぎ資料として議事録にまとめることで、組織全体のテスト技術の向上につなげる。</div></div>
+    </div>
+
+  </div><!-- /tab-quiz -->
+
+  <!-- ===== QA ===== -->
+  <div id="tab-qa" class="tab-content">
+    <div class="quiz-header">
+      <div class="chapter-label">一問一答 — 4.3 テスト評価</div>
+      <div class="chapter-title" style="font-family:'Noto Serif JP',serif;font-size:1.5rem;">重要キーワード確認（全22問）</div>
+      <div class="quiz-meta"><div class="quiz-stat">クリックして解答を表示</div></div>
+    </div>
+    <div class="qa-list">
+
+      <div class="qa-item" data-sec="4-3-1"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト報告書の入手時にチェックシートを使って確認すべき情報の例を3つ挙げよ。</span></div><div class="qa-a"><div class="qa-a-text">①テストの計画と実績　②テスト対象のリリース実績や仕様変更などの変更履歴　③テスト報告のレビュー結果</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-1"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.1で入手した情報を整理する際の方法は？</span></div><div class="qa-a"><div class="qa-a-text">分析しやすいようにテスト活動の時系列やイベントごとに整理する。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-2"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト活動全般の情報収集で対象となるプロジェクト情報の主な例を5つ挙げよ。</span></div><div class="qa-a"><div class="qa-a-text">①テストスコープ　②テストタスク　③コスト計画と実績　④品質計画と実績　⑤組織計画と実績（要員の調達・確保・トレーニング計画と実績）。他にもコミュニケーション計画、リスク管理計画と実績、調達計画と実績、プロジェクト改善計画（目標）なども含まれる。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-3"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト活動の分析における2つの分析種別は？</span></div><div class="qa-a"><div class="qa-a-text">①テスト活動の評価分析（テスト計画と実績の対比・変更要求対応・トラブルのリカバリなど）　②技術資産の蓄積のための分析（テスト成果物に対する実績データ分析）</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-3"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テストリポジトリとは何か、どのような場合に利用するか？</span></div><div class="qa-a"><div class="qa-a-text">テスト活動に関する経験（暗黙知・ノウハウ）を定量的・定性的な情報として蓄積するデータ管理の仕組み。構築している場合はテスト活動の分析データを登録して活用する。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-3"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">TMapとは何か？提唱者と特徴を答えよ。</span></div><div class="qa-a"><div class="qa-a-text">SOGETI社が提案したテストプロセスの方法論。20のキーエリアを13のスケールで構造化しており、テストプロセス改善に用いられる。プロセスの成熟度計測に活用する。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-3"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">ボトルネック抽出の具体例として、テスト設計項目の予実確認から何を改善するか？</span></div><div class="qa-a"><div class="qa-a-text">大幅な差異がある場合はなぜ差異が出たかを分析し、見積精度の改善につなげる。そのための指標（差異の閾値）を設定し分析を繰り返すことでボトルネックを抽出できる。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-4"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.4のOUTPUT5つは？</span></div><div class="qa-a"><div class="qa-a-text">①改善目標の達成率　②改善のねらいの達成度合い　③改善のタスクの実施程度　④改善未達成項目　⑤新たな改善項目</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-4"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">「改善が不十分な項目や新たな改善すべき項目を抽出する」のはどの節の実施タスクか？</span></div><div class="qa-a"><div class="qa-a-text">4.3.4「前回の改善項目の達成率を評価する」の実施タスク。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-5"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.5で判定する「満足度（充足度）」とは何を基に判定するか？</span></div><div class="qa-a"><div class="qa-a-text">改善目標の達成率と改善のねらいの達成度合いを基に、プロジェクト改善の目的との差異を比較して判定する。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-5"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.5のINPUT2つとOUTPUT2つは？</span></div><div class="qa-a"><div class="qa-a-text">INPUT：①改善目標の達成率　②改善のねらいの達成度合い。OUTPUT：①プロジェクト改善の全体達成率　②評価指標の見直し項目</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-6"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.6「改善点の抽出」のINPUTとOUTPUTは？</span></div><div class="qa-a"><div class="qa-a-text">INPUT：プロジェクト成果および反省点のアンケート。OUTPUT：①改善点（良かった点・悪かった点）　②プロジェクト成果一覧/詳細　③プロジェクト反省点一覧/詳細</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-7"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">改善策検討における「根治対策」と「回避方策」の違いは？</span></div><div class="qa-a"><div class="qa-a-text">根治対策は問題の根本原因を取り除く対策。回避方策は問題が発生した場合の回避手段を講じる方策。どちらも影響度合いが高く発生頻度が多い項目に対して優先的に検討する。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-7"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.7のOUTPUT（成果物）は何か？</span></div><div class="qa-a"><div class="qa-a-text">改善処置対策書</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-8"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.8のOUTPUTを全て挙げよ。</span></div><div class="qa-a"><div class="qa-a-text">①テスト評価報告書　②テスト活動改善計画　③テスト活動計画対比分析　④達成指標（達成項目／未達成項目）　⑤次期改善点一覧　⑥技術蓄積情報一覧（保管情報）</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-8"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト評価報告書の文書化において「改善施策の視点で整理する」とはどういうことか？</span></div><div class="qa-a"><div class="qa-a-text">該当するテスト活動の改善施策（次回どう改善するか）の観点から、テスト活動の分析結果や評価結果を整理すること。関連性が明確になるような書式で文書化することが求められる。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-9"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.9のOUTPUT4つは？</span></div><div class="qa-a"><div class="qa-a-text">①開示先一覧　②テスト評価報告書へのコメント／指摘事項　③報告会（実施した場合）の議事録　④次回プロジェクトへの引継ぎ資料</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-9"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト活動の「水平展開」とは何をすることか？</span></div><div class="qa-a"><div class="qa-a-text">テスト活動の技術情報・改善成果・失敗事例などを、自プロジェクトにとどめず他のテスト活動のプロジェクトにも広く共有・活用することを指す。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-2"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.2で収集するプロジェクト情報のうち「リスク管理」に関する収集物は？</span></div><div class="qa-a"><div class="qa-a-text">リスク管理計画と実績（リスク定義書・対策計画書）。顕在化したリスクの対応率なども含む。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-3"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト活動の分析でプロセス成熟度を計測する方法として挙げられている2つは？</span></div><div class="qa-a"><div class="qa-a-text">①標準テストプロセスとの比較　②TMapなどの活用</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-4"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">プロジェクト改善計画書はいつ作成されるか？</span></div><div class="qa-a"><div class="qa-a-text">テストプロジェクトの立ち上げ時に前回の改善課題がある場合に作成される。すべてのテスト工程（テスト詳細設計・テスト実行などの工程）で立案・作成される。</div></div></div>
+
+      <div class="qa-item" data-sec="4-3-6"><div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">4.3.6「改善点の抽出」で収集する対象は誰か？</span></div><div class="qa-a"><div class="qa-a-text">プロジェクト関係者（広く収集する）。役割の異なる関係者でプロジェクトに対する成果・反省点のギャップを分析することが重要。</div></div></div>
+
+    </div>
+  </div><!-- /tab-qa -->
+
+</div><!-- /container -->
+
+<script>
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function switchSection(sec,btn){
+  document.querySelectorAll('.sec-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['.section-block','.question-card','.qa-item'].forEach(sel=>{
+    document.querySelectorAll(sel).forEach(el=>{
+      el.style.display=(sec==='all'||el.dataset.sec===sec)?'':'none';
+    });
+  });
+}
+
+function checkChoice(btn,selected,correct){
+  const card=btn.closest('.question-card');
+  card.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;b.classList.add('revealed');
+    if(b.querySelector('.choice-label').textContent===correct)b.classList.add('correct');
+  });
+  if(selected!==correct)btn.classList.add('incorrect');
+  const rev=card.querySelector('.answer-reveal');
+  if(rev)rev.classList.add('show');
+}
+
+function checkFillN(ids,answers){
+  ids.forEach((id,i)=>{
+    const inp=document.getElementById(id);
+    if(!inp)return;
+    inp.disabled=true;
+    const v=inp.value.trim();
+    const a=answers[i]||'';
+    inp.classList.add((v===a||a.includes(v)||v.includes(a))&&v?'correct':'incorrect');
+  });
+  const base=ids[0].replace(/[abc]$/,'');
+  const rev=document.getElementById('rev-'+base);
+  if(rev)rev.classList.add('show');
+}
+
+function showAns(id){
+  const r=document.getElementById(id);
+  if(r)r.classList.add('show');
+}
+
+function toggleQA(el){
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+</body>
+</html>
