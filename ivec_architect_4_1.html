@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IVEC アーキテクトクラス｜4.1 テスト要求分析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: #30363d;
+    --accent: #e6a817;
+    --accent2: #3b82f6;
+    --accent3: #10b981;
+    --danger: #f87171;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #586069;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 56px;
+  }
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .header-title {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .header-title span { color: var(--text); font-weight: 500; }
+  .tab-nav {
+    margin-left: auto;
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--accent); color: #000; font-weight: 700; }
+
+  /* ===== LAYOUT ===== */
+  .container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+
+  /* ===== SECTION NAV ===== */
+  .section-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .sec-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+  }
+  .sec-btn:hover, .sec-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(230,168,23,0.08);
+  }
+
+  /* ===== TABS ===== */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== TEXTBOOK ===== */
+  .chapter-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .chapter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .chapter-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .chapter-desc {
+    margin-top: 0.8rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    max-width: 680px;
+  }
+
+  .section-block {
+    margin-bottom: 3rem;
+    display: none;
+  }
+  .section-block.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent2);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 2px solid var(--accent2);
+    padding-bottom: 4px;
+  }
+
+  .prose { color: var(--text); margin-bottom: 1.2rem; }
+  .prose p { margin-bottom: 0.9rem; }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin: 1.2rem 0;
+  }
+  @media (max-width: 600px) { .io-grid { grid-template-columns: 1fr; } }
+  .io-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+  }
+  .io-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  .io-label.in { color: var(--accent2); }
+  .io-label.out { color: var(--accent3); }
+  .io-list {
+    list-style: none;
+    font-size: 0.83rem;
+    color: var(--text-muted);
+  }
+  .io-list li { padding: 2px 0; }
+  .io-list li::before { content: '› '; color: var(--text-dim); }
+
+  .task-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+  }
+  .task-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  .task-text {
+    font-size: 0.88rem;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.7;
+  }
+
+  .point-box {
+    background: rgba(59,130,246,0.07);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .point-label {
+    font-size: 0.72rem;
+    color: var(--accent2);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+  .point-text { font-size: 0.87rem; color: #a8c0e0; line-height: 1.75; }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 4px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* ===== QUIZ ===== */
+  .quiz-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .quiz-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .quiz-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+  .quiz-stat span { color: var(--text); font-weight: 600; }
+
+  .q-section {
+    margin-bottom: 3rem;
+    display: none;
+  }
+  .q-section.active { display: block; }
+  .q-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: border-color 0.2s;
+  }
+  .question-card:hover { border-color: var(--text-dim); }
+  .q-meta {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+    align-items: center;
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+  .q-type {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .q-type.choice { background: rgba(59,130,246,0.15); color: var(--accent2); }
+  .q-type.tf { background: rgba(16,185,129,0.15); color: var(--accent3); }
+  .q-type.fill { background: rgba(230,168,23,0.15); color: var(--accent); }
+  .q-type.desc { background: rgba(248,113,113,0.15); color: var(--danger); }
+  .q-section-tag {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  .q-text {
+    font-size: 0.93rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.75;
+    font-weight: 500;
+  }
+
+  /* Choice */
+  .choices { display: flex; flex-direction: column; gap: 0.5rem; }
+  .choice-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 0.87rem;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.15s;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent2); color: var(--text); background: rgba(59,130,246,0.06); }
+  .choice-label { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent2); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .choice-btn.correct { border-color: var(--accent3) !important; background: rgba(16,185,129,0.1) !important; color: var(--text) !important; }
+  .choice-btn.incorrect { border-color: var(--danger) !important; background: rgba(248,113,113,0.08) !important; }
+  .choice-btn.revealed { pointer-events: none; }
+
+  /* Fill blank */
+  .fill-area { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+  .fill-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.8rem;
+    color: var(--text);
+    font-size: 0.87rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    outline: none;
+    min-width: 200px;
+    flex: 1;
+    transition: border-color 0.2s;
+  }
+  .fill-input:focus { border-color: var(--accent2); }
+  .fill-input.correct { border-color: var(--accent3); background: rgba(16,185,129,0.07); }
+  .fill-input.incorrect { border-color: var(--danger); background: rgba(248,113,113,0.06); }
+
+  /* Description */
+  .desc-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    color: var(--text);
+    font-size: 0.87rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    outline: none;
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+  }
+  .desc-textarea:focus { border-color: var(--accent2); }
+
+  .check-btn {
+    margin-top: 0.8rem;
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .check-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .answer-reveal {
+    margin-top: 0.9rem;
+    background: rgba(16,185,129,0.06);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    display: none;
+  }
+  .answer-reveal.show { display: block; }
+  .answer-label { font-size: 0.72rem; color: var(--accent3); font-weight: 700; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .answer-text { font-size: 0.87rem; color: #9fcfb8; line-height: 1.75; }
+
+  /* Score */
+  .score-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .score-label { font-size: 0.82rem; color: var(--text-muted); }
+  .score-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--accent); font-weight: 700; }
+  .score-submit-btn {
+    margin-left: auto;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    transition: opacity 0.2s;
+  }
+  .score-submit-btn:hover { opacity: 0.85; }
+
+  /* ===== QA ===== */
+  .qa-list { display: flex; flex-direction: column; gap: 0.8rem; }
+  .qa-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+  }
+  .qa-item.active { display: block; }
+  .qa-q {
+    padding: 1rem 1.2rem;
+    display: flex;
+    gap: 0.8rem;
+    cursor: pointer;
+    align-items: flex-start;
+    transition: background 0.15s;
+  }
+  .qa-q:hover { background: var(--surface2); }
+  .qa-q-icon { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .qa-q-text { font-size: 0.9rem; color: var(--text); font-weight: 500; line-height: 1.65; }
+  .qa-a {
+    padding: 0.9rem 1.2rem 1rem 2.6rem;
+    background: rgba(16,185,129,0.04);
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+  .qa-a.open { display: block; }
+  .qa-a-text { font-size: 0.87rem; color: #9fcfb8; line-height: 1.8; }
+
+  /* ===== MISC ===== */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-dim);
+  }
+  .empty-state .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+  .page-break { height: 1px; background: var(--border); margin: 2.5rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IVEC</div>
+  <div class="header-title">アーキテクトクラス｜<span>4.1 テスト要求分析</span></div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('textbook')">📖 解説</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">✏️ 問題集</button>
+    <button class="tab-btn" onclick="switchTab('qa')">💡 一問一答</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== SECTION NAV ===== -->
+  <div class="section-nav" id="sectionNav">
+    <button class="sec-btn active" onclick="switchSection('all')">すべて</button>
+    <button class="sec-btn" onclick="switchSection('4-1-1')">4.1.1 準備</button>
+    <button class="sec-btn" onclick="switchSection('4-1-2')">4.1.2 獲得</button>
+    <button class="sec-btn" onclick="switchSection('4-1-3')">4.1.3 分析</button>
+    <button class="sec-btn" onclick="switchSection('4-1-4')">4.1.4 成果物作成</button>
+    <button class="sec-btn" onclick="switchSection('4-1-5')">4.1.5 検証</button>
+  </div>
+
+  <!-- ==================== TEXTBOOK ==================== -->
+  <div id="tab-textbook" class="tab-content active">
+    <div class="chapter-header">
+      <div class="chapter-label">Chapter 4.1 — 汎用テスト知識・スキル</div>
+      <div class="chapter-title">テスト要求分析</div>
+      <div class="chapter-desc">テスト対象・対象外の範囲や制約事項を収集・分析し、テスト要件として定義するプロセス。テスト活動のゴール（終了基準・リリース基準）の根拠となる。</div>
+    </div>
+
+    <!-- 4.1.1 -->
+    <div class="section-block active" id="tb-all">
+    <div id="tb-4-1-1">
+      <div class="section-header">
+        <div class="section-num">4.1.1</div>
+        <div class="section-title">テスト要求分析の準備をする</div>
+      </div>
+      <div class="prose">
+        <p>テスト要求分析の準備フェーズでは、インタビューやドキュメントから要求を引き出すための土台を整える。<strong>ステークホルダを特定してアサインし</strong>、入手すべき情報の種類と取得経路の正当性を明確にすることが求められる。</p>
+        <p>例えば、ユーザ要求を確認したい場合は「利用者」、保守要求は「管理者」をインタビュー対象とする。開発中や要件未決定などで情報が得られない場合は、<strong>不足情報を一覧化してタスク管理</strong>し、受身にならず期限を設けて入手を促す。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card">
+          <div class="io-label in">INPUT</div>
+          <ul class="io-list">
+            <li>マスターテスト計画</li>
+            <li>テスト要求の取得概要（一覧）</li>
+            <li>ドキュメントベースのテスト要求</li>
+            <li>要求仕様書・開発設計書</li>
+            <li>過去テスト計画書・報告書</li>
+          </ul>
+        </div>
+        <div class="io-card">
+          <div class="io-label out">OUTPUT</div>
+          <ul class="io-list">
+            <li>テスト要求の取得概要（一覧）</li>
+            <li>インタビュー報告書</li>
+            <li>議事録等</li>
+            <li>不足情報の管理表</li>
+          </ul>
+        </div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク①</div>
+        <div class="task-text">テスト要求に必要な入力を整理する。マスターテスト計画から該当するテストレベルを確認し、取得すべき情報を整理する。</div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">取得すべき情報を整理する目的は「何をもってテスト要求を決定したか、データの出所を明らかにすること」。要求を可視化することで、テストの<strong>終了判定時の証跡</strong>となる。</div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク②</div>
+        <div class="task-text">適切なドキュメントを入手し、一覧を作成してバージョンと入手元を記録する。</div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">ドキュメント一覧を記録することで、作成したテスト要求の根拠を<strong>トレース</strong>できる仕組みを確立できる。</div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク③</div>
+        <div class="task-text">不足情報が得られない場合は一覧化し、入手の可否・時期・担当者を設定してタスク管理する。</div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">「いつまでに」不足情報を入手するかを設定し、<strong>受身にならずステークホルダへ積極的に要求</strong>することが重要。</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4.1.2 -->
+    <div id="tb-4-1-2">
+      <div class="section-header">
+        <div class="section-num">4.1.2</div>
+        <div class="section-title">テスト要求を獲得する</div>
+      </div>
+      <div class="prose">
+        <p>準備で収集したドキュメントやインタビュー情報から、テスト要求にインプットする情報を抽出する。入手した情報が<strong>「要求」なのか「阻害要因」なのか</strong>を分類・関連付けする。</p>
+        <p>また、一方的に情報を収集するのではなく、収集した情報を整備して<strong>妥当な情報であることを要求元と確認</strong>することが重要。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card">
+          <div class="io-label in">INPUT</div>
+          <ul class="io-list">
+            <li>品質計画</li>
+            <li>マネジメントシステム（品質/環境/セキュリティ等）</li>
+            <li>マスターテスト計画書</li>
+            <li>開発仕様書・プロジェクト計画書</li>
+            <li>テスト対象の利用環境に関する情報</li>
+          </ul>
+        </div>
+        <div class="io-card">
+          <div class="io-label out">OUTPUT</div>
+          <ul class="io-list">
+            <li>品質方針・テスト目的・品質目標</li>
+            <li>テストベース一覧</li>
+            <li>テスト対象/対象外範囲の一覧</li>
+            <li>概算コスト・大まかなスケジュール</li>
+          </ul>
+        </div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク（主要5項目）</div>
+        <div class="task-text">
+          1. 企業の<strong>品質方針/コンセプト</strong>を確認し品質評価手法を検討<br>
+          2. マスターテスト計画書からテストレベルの範囲と<strong>テスト目的</strong>を獲得<br>
+          3. 要求仕様書から<strong>品質要求</strong>を想定し品質目標を定義<br>
+          4. <strong>テストベース</strong>情報を入手して一覧化<br>
+          5. テスト環境情報・<strong>コンプライアンス情報</strong>を収集
+        </div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">コンプライアンス要件（法令・規格）は仕様書に<strong>暗黙知</strong>として明示されない場合がある。規格違反を見逃さないために事前の情報収集が不可欠。</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4.1.3 -->
+    <div id="tb-4-1-3">
+      <div class="section-header">
+        <div class="section-num">4.1.3</div>
+        <div class="section-title">テスト要求を分析する</div>
+      </div>
+      <div class="prose">
+        <p>獲得したテスト要求情報を分析し、必要な関連付けを行って体系的に整理する。<strong>テスト目的（スコープ）を定義</strong>し、制約事項の有無を整理する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card">
+          <div class="io-label in">INPUT</div>
+          <ul class="io-list">
+            <li>品質方針・品質特性</li>
+            <li>テスト対象のコンセプト</li>
+            <li>品質要求・品質目標</li>
+            <li>テストベース一覧</li>
+            <li>要件定義書・マスターテスト計画書</li>
+            <li>コンプライアンス情報・テスト環境要求</li>
+          </ul>
+        </div>
+        <div class="io-card">
+          <div class="io-label out">OUTPUT</div>
+          <ul class="io-list">
+            <li>テスト目的の詳細・構造（可視化）</li>
+            <li>テスト目標の詳細・構造（可視化）</li>
+            <li>整合性確認済テストベース一覧</li>
+            <li>テスト範囲の分析結果レポート</li>
+            <li>テスト対象の問題・課題一覧</li>
+            <li>テスト環境要求一覧</li>
+          </ul>
+        </div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク（主要項目）</div>
+        <div class="task-text">
+          1. 品質方針確認 → <strong>品質特性分析（ISO/IEC 25010活用）</strong> → テスト目的の詳細化・構造化<br>
+          2. 品質要求/品質目標からテスト目標の詳細化<br>
+          3. テストベース一覧と要件定義書・品質特性との<strong>整合性確認</strong><br>
+          4. テストレベルの対象範囲から<strong>範囲の深さ</strong>を策定<br>
+          5. 開発進捗状況レポートとの差異を抽出し<strong>テスト計画へのリスク</strong>を分析
+        </div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">「範囲の深さ」とは例えば、性能要求に対してモジュール単位で見るか、システム全体で見るかをテストレベルで決めること。品質目標の定義過程は後工程で参照するために記録・<strong>構造化</strong>を推奨。</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4.1.4 -->
+    <div id="tb-4-1-4">
+      <div class="section-header">
+        <div class="section-num">4.1.4</div>
+        <div class="section-title">テスト要求分析成果物を作成する</div>
+      </div>
+      <div class="prose">
+        <p>テスト要求分析結果を整理して成果物を作成する。インプット項目と分析結果を<strong>可視化・関連付け</strong>することで、テスト要求の<strong>カバレッジとトレーサビリティ</strong>を確保する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card">
+          <div class="io-label in">INPUT</div>
+          <ul class="io-list"><li>テスト要求の分析結果</li></ul>
+        </div>
+        <div class="io-card">
+          <div class="io-label out">OUTPUT</div>
+          <ul class="io-list"><li>テスト要求分析成果物（下記6項目を網羅）</li></ul>
+        </div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">成果物に含めるべき6項目</div>
+        <div class="task-text">
+          1. <strong>テスト目的</strong><br>
+          2. <strong>品質目標</strong><br>
+          3. <strong>テストベース</strong><br>
+          4. <strong>テスト対象範囲</strong><br>
+          5. <strong>テスト対象外範囲</strong><br>
+          6. <strong>テスト対象の開発状況</strong>・テスト環境（テストベンチ）
+        </div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">記載が曖昧になりがちな<strong>「テスト対象外範囲」</strong>を明確にすることが特に重要。「なぜ対象外か」「誰の責務で実施すべきか」を明確にすることで、<strong>早期に役割分担を調整</strong>できる。</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4.1.5 -->
+    <div id="tb-4-1-5">
+      <div class="section-header">
+        <div class="section-num">4.1.5</div>
+        <div class="section-title">テスト要求分析成果物を検証する</div>
+      </div>
+      <div class="prose">
+        <p>テスト要求分析成果物に対して<strong>要求元と公式レビュー</strong>を行い、内容の過不足や整合性を確認する。</p>
+      </div>
+      <div class="io-grid">
+        <div class="io-card">
+          <div class="io-label in">INPUT</div>
+          <ul class="io-list"><li>テスト要求分析成果物</li></ul>
+        </div>
+        <div class="io-card">
+          <div class="io-label out">OUTPUT</div>
+          <ul class="io-list">
+            <li>レビュー記録</li>
+            <li>レビューフォローアップ</li>
+            <li>承認されたテスト要求分析成果物</li>
+          </ul>
+        </div>
+      </div>
+      <div class="task-box">
+        <div class="task-label">実施タスク</div>
+        <div class="task-text">
+          1. 要求元および関係者と公式レビューを行い、<strong>要求の漏れと整合性</strong>を確認<br>
+          2. 指摘事項があれば<strong>レビュー記録に基づいてフォローアップ</strong><br>
+          3. 全フォローアップ完了後、<strong>要求元の承認</strong>を得る
+        </div>
+      </div>
+      <div class="point-box">
+        <div class="point-label">🎯 学習のポイント</div>
+        <div class="point-text">レビュー基準・レビュー規約が整備されている場合はそれに準じる。整備されていない場合は<strong>どのようにレビューを行うかを必ず確認</strong>する。</div>
+      </div>
+    </div>
+    </div><!-- /tb-all -->
+  </div><!-- /tab-textbook -->
+
+
+  <!-- ==================== QUIZ ==================== -->
+  <div id="tab-quiz" class="tab-content">
+    <div class="quiz-header">
+      <div class="chapter-label">問題集 — 4.1 テスト要求分析</div>
+      <div class="chapter-title" style="font-family:'Noto Serif JP',serif;font-size:1.5rem;">練習問題（全15問）</div>
+      <div class="quiz-meta">
+        <div class="quiz-stat">四択: <span>6問</span></div>
+        <div class="quiz-stat">穴埋め: <span>4問</span></div>
+        <div class="quiz-stat">記述: <span>5問</span></div>
+      </div>
+    </div>
+
+    <!-- 四択問題 -->
+    <div class="q-section active" id="q-all">
+
+      <div class="q-section-title">■ 四択問題</div>
+
+      <!-- Q1 -->
+      <div class="question-card" data-section="4-1-1">
+        <div class="q-meta">
+          <span class="q-num">Q01</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.1</span>
+        </div>
+        <div class="q-text">テスト要求分析の準備フェーズにおいて、入手すべきドキュメントの一覧を作成し各々のバージョンと入手元を記録することの主な目的は何か。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','B')"><span class="choice-label">A</span>テスト実行時の証跡として保存するため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','B')"><span class="choice-label">B</span>作成したテスト要求に対する根拠をトレースできる仕組みを運用するため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','B')"><span class="choice-label">C</span>開発者へのドキュメント返却手続きを明確にするため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','B')"><span class="choice-label">D</span>ステークホルダへのインタビュースケジュールを策定するため</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q1">
+          <div class="answer-label">✅ 正解：B</div>
+          <div class="answer-text">入手したドキュメントの一覧を作成・記録することで、整理したテスト要求が何に基づくものかトレースできる仕組みが構築される。これにより、作成したテスト要求の根拠を主張できる。</div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question-card" data-section="4-1-1">
+        <div class="q-meta">
+          <span class="q-num">Q02</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.1</span>
+        </div>
+        <div class="q-text">開発中や要件未決定などでヒアリング結果が得られない場合、アーキテクトはどのように対処すべきか。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','C')"><span class="choice-label">A</span>情報が揃うまでテスト要求分析フェーズを保留する</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','C')"><span class="choice-label">B</span>不足情報を口頭で関係者に伝え、随時フォローする</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','C')"><span class="choice-label">C</span>不足情報を一覧化し、入手の可否・時期・担当者を設定してタスク管理する</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','C')"><span class="choice-label">D</span>入手できた情報のみでテスト要求分析を完了させ、後工程で補足する</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q2">
+          <div class="answer-label">✅ 正解：C</div>
+          <div class="answer-text">一覧化したタスクに「いつまでに」不足情報を入手するかを設定し、受身にならず管理してステークホルダに要求することが重要。</div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question-card" data-section="4-1-2">
+        <div class="q-meta">
+          <span class="q-num">Q03</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.2</span>
+        </div>
+        <div class="q-text">テスト要求の獲得において、コンプライアンス情報を事前に収集する理由として最も適切なものはどれか。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','D')"><span class="choice-label">A</span>開発チームへのレビュー依頼を効率化するため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','D')"><span class="choice-label">B</span>テストベースのバージョン管理を簡易化するため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','D')"><span class="choice-label">C</span>品質目標の数値を決定するため</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','D')"><span class="choice-label">D</span>法令や規格は暗黙知として仕様書に明示されない場合があり、規格違反を見逃さないため</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q3">
+          <div class="answer-label">✅ 正解：D</div>
+          <div class="answer-text">テスト対象が利用される環境における法令や規格は、暗黙知として仕様書に明示されないことがある。規格違反を見逃さないために事前にコンプライアンス情報を収集する。</div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question-card" data-section="4-1-3">
+        <div class="q-meta">
+          <span class="q-num">Q04</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.3</span>
+        </div>
+        <div class="q-text">テスト要求分析において品質特性を分析する際に活用が推奨される国際規格はどれか。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','B')"><span class="choice-label">A</span>ISO/IEC 27001</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','B')"><span class="choice-label">B</span>ISO/IEC 25010</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','B')"><span class="choice-label">C</span>ISO/IEC 29119</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','B')"><span class="choice-label">D</span>ISO 9000</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q4">
+          <div class="answer-label">✅ 正解：B</div>
+          <div class="answer-text">ISO/IEC 25010は品質特性を定義した規格で、テスト観点として活用できる。テスト対象が利用される環境と担当するテストレベルを考慮して分析すると効率的。</div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question-card" data-section="4-1-4">
+        <div class="q-meta">
+          <span class="q-num">Q05</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.4</span>
+        </div>
+        <div class="q-text">テスト要求分析成果物において特に記載が曖昧になりがちで、明確化が重要な項目はどれか。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','C')"><span class="choice-label">A</span>テスト目的</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','C')"><span class="choice-label">B</span>品質目標</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','C')"><span class="choice-label">C</span>テスト対象外範囲</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','C')"><span class="choice-label">D</span>テストベース</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q5">
+          <div class="answer-label">✅ 正解：C</div>
+          <div class="answer-text">テスト対象外範囲は記載が曖昧になりがち。「なぜ対象外か」「誰の責務で実施すべきか」を明確にすることで、検討漏れがあった場合に早期に役割分担を調整できる。</div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="question-card" data-section="4-1-5">
+        <div class="q-meta">
+          <span class="q-num">Q06</span>
+          <span class="q-type choice">四択</span>
+          <span class="q-section-tag">4.1.5</span>
+        </div>
+        <div class="q-text">テスト要求分析成果物の公式レビューにおいて、全てのフォローアップが完了した後に行うべきことは何か。</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="checkChoice(this,'A','B')"><span class="choice-label">A</span>テストアーキテクチャ設計を開始する</button>
+          <button class="choice-btn" onclick="checkChoice(this,'B','B')"><span class="choice-label">B</span>要求元の承認を得る</button>
+          <button class="choice-btn" onclick="checkChoice(this,'C','B')"><span class="choice-label">C</span>成果物をアーカイブする</button>
+          <button class="choice-btn" onclick="checkChoice(this,'D','B')"><span class="choice-label">D</span>レビュー規約を策定する</button>
+        </div>
+        <div class="answer-reveal" id="reveal-q6">
+          <div class="answer-label">✅ 正解：B</div>
+          <div class="answer-text">全てのレビューフォローアップが完了したら、要求元の承認を得る。これが公式レビューの完了条件。</div>
+        </div>
+      </div>
+
+      <div class="q-section-title" style="margin-top:2.5rem;">■ 穴埋め問題</div>
+
+      <!-- Q7 -->
+      <div class="question-card" data-section="4-1-1">
+        <div class="q-meta">
+          <span class="q-num">Q07</span>
+          <span class="q-type fill">穴埋め</span>
+          <span class="q-section-tag">4.1.1</span>
+        </div>
+        <div class="q-text">テスト要求の取得すべき情報を整理する目的は、何をもってテスト要求を決定したか、データの（　　　）を明らかにすることである。要求を可視化することで、テストの（　　　）時の証跡となる。</div>
+        <div class="fill-area">
+          <input class="fill-input" id="fill7a" type="text" placeholder="空欄①">
+          <input class="fill-input" id="fill7b" type="text" placeholder="空欄②">
+          <button class="check-btn" onclick="checkFill('fill7', ['出所','終了判定'])">確認</button>
+        </div>
+        <div class="answer-reveal" id="reveal-fill7">
+          <div class="answer-label">✅ 正解</div>
+          <div class="answer-text">①出所（データの出所を明らかにする） ②終了判定（テストの終了判定時の証跡）</div>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="question-card" data-section="4-1-2">
+        <div class="q-meta">
+          <span class="q-num">Q08</span>
+          <span class="q-type fill">穴埋め</span>
+          <span class="q-section-tag">4.1.2</span>
+        </div>
+        <div class="q-text">テスト要求の獲得では、一方的に情報を収集するのではなく、収集した情報を整備して妥当な情報であることを（　　　）と確認を行うことが重要である。</div>
+        <div class="fill-area">
+          <input class="fill-input" id="fill8a" type="text" placeholder="答えを入力">
+          <button class="check-btn" onclick="checkFill('fill8', ['要求元'])">確認</button>
+        </div>
+        <div class="answer-reveal" id="reveal-fill8">
+          <div class="answer-label">✅ 正解</div>
+          <div class="answer-text">要求元（収集した情報の妥当性を要求元と確認することが重要）</div>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="question-card" data-section="4-1-3">
+        <div class="q-meta">
+          <span class="q-num">Q09</span>
+          <span class="q-type fill">穴埋め</span>
+          <span class="q-section-tag">4.1.3</span>
+        </div>
+        <div class="q-text">テスト要求分析において、テストベース一覧と品質特性・要件定義書・マスターテスト計画書との（　　　）を確認し、過不足を明確にすることが求められる。</div>
+        <div class="fill-area">
+          <input class="fill-input" id="fill9a" type="text" placeholder="答えを入力">
+          <button class="check-btn" onclick="checkFill('fill9', ['整合性'])">確認</button>
+        </div>
+        <div class="answer-reveal" id="reveal-fill9">
+          <div class="answer-label">✅ 正解</div>
+          <div class="answer-text">整合性（テストベース一覧と各ドキュメントとの整合性を確認し過不足を明確にする）</div>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="question-card" data-section="4-1-4">
+        <div class="q-meta">
+          <span class="q-num">Q10</span>
+          <span class="q-type fill">穴埋め</span>
+          <span class="q-section-tag">4.1.4</span>
+        </div>
+        <div class="q-text">テスト要求分析成果物では、インプットの項目と分析結果を可視化し関係付けを行うことで、テスト要求の（　　　）と（　　　）を確保する。</div>
+        <div class="fill-area">
+          <input class="fill-input" id="fill10a" type="text" placeholder="空欄①">
+          <input class="fill-input" id="fill10b" type="text" placeholder="空欄②">
+          <button class="check-btn" onclick="checkFill('fill10', ['カバレッジ','トレーサビリティ'])">確認</button>
+        </div>
+        <div class="answer-reveal" id="reveal-fill10">
+          <div class="answer-label">✅ 正解</div>
+          <div class="answer-text">①カバレッジ ②トレーサビリティ（順不同）</div>
+        </div>
+      </div>
+
+      <div class="q-section-title" style="margin-top:2.5rem;">■ 記述問題</div>
+
+      <!-- Q11 -->
+      <div class="question-card" data-section="4-1-1">
+        <div class="q-meta">
+          <span class="q-num">Q11</span>
+          <span class="q-type desc">記述</span>
+          <span class="q-section-tag">4.1.1</span>
+        </div>
+        <div class="q-text">テスト要求分析の準備フェーズにおいて、ステークホルダへのインタビューをアサインする前に行うべきことと、その理由を説明せよ。</div>
+        <textarea class="desc-textarea" placeholder="回答を入力してください…"></textarea>
+        <button class="check-btn" onclick="showAnswer('reveal-q11')">解答例を見る</button>
+        <div class="answer-reveal" id="reveal-q11">
+          <div class="answer-label">📝 解答例</div>
+          <div class="answer-text">インタビュー前に「誰から、何をヒアリングしたいのか」を事前に整理しておく。理由：繰り返し同じステークホルダへヒアリングしないようにするためであり、最初にステークホルダを明らかにして事前準備することで効率よくヒアリングを実施できるから。</div>
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="question-card" data-section="4-1-2">
+        <div class="q-meta">
+          <span class="q-num">Q12</span>
+          <span class="q-type desc">記述</span>
+          <span class="q-section-tag">4.1.2</span>
+        </div>
+        <div class="q-text">テスト要求獲得において、テストベースを一覧化することの目的を説明せよ。</div>
+        <textarea class="desc-textarea" placeholder="回答を入力してください…"></textarea>
+        <button class="check-btn" onclick="showAnswer('reveal-q12')">解答例を見る</button>
+        <div class="answer-reveal" id="reveal-q12">
+          <div class="answer-label">📝 解答例</div>
+          <div class="answer-text">テストベースを一覧化することで入手する情報が可視化され、入手すべき情報の漏れ防止につながる。</div>
+        </div>
+      </div>
+
+      <!-- Q13 -->
+      <div class="question-card" data-section="4-1-3">
+        <div class="q-meta">
+          <span class="q-num">Q13</span>
+          <span class="q-type desc">記述</span>
+          <span class="q-section-tag">4.1.3</span>
+        </div>
+        <div class="q-text">「範囲の深さ」という概念について、性能要求を例に挙げて説明せよ。</div>
+        <textarea class="desc-textarea" placeholder="回答を入力してください…"></textarea>
+        <button class="check-btn" onclick="showAnswer('reveal-q13')">解答例を見る</button>
+        <div class="answer-reveal" id="reveal-q13">
+          <div class="answer-label">📝 解答例</div>
+          <div class="answer-text">範囲の深さとは、テスト対象の確認粒度を指す。例えば性能要求に対してモジュール単位の応答時間を確認するのか、システム全体の応答時間を確認するのかは、テストレベルの対象範囲によって決まる。また性能測定時のメモリ使用量やCPU使用率をどこまで意識するかも検討が必要。</div>
+        </div>
+      </div>
+
+      <!-- Q14 -->
+      <div class="question-card" data-section="4-1-4">
+        <div class="q-meta">
+          <span class="q-num">Q14</span>
+          <span class="q-type desc">記述</span>
+          <span class="q-section-tag">4.1.4</span>
+        </div>
+        <div class="q-text">テスト要求分析成果物において「テスト対象外範囲」を明確にする意義を述べよ。</div>
+        <textarea class="desc-textarea" placeholder="回答を入力してください…"></textarea>
+        <button class="check-btn" onclick="showAnswer('reveal-q14')">解答例を見る</button>
+        <div class="answer-reveal" id="reveal-q14">
+          <div class="answer-label">📝 解答例</div>
+          <div class="answer-text">テスト対象外範囲を明確にすることで、検討漏れがあった場合に早い段階で役割分担を調整できる。「なぜ対象外にしたのか」「対象外にした範囲は誰の責務で実施すべきか（もしくは実施しないのか）」を明確化することで、後工程での手戻りを防ぐ。</div>
+        </div>
+      </div>
+
+      <!-- Q15 -->
+      <div class="question-card" data-section="4-1-5">
+        <div class="q-meta">
+          <span class="q-num">Q15</span>
+          <span class="q-type desc">記述</span>
+          <span class="q-section-tag">4.1.5</span>
+        </div>
+        <div class="q-text">テスト要求分析成果物のレビューにおいて、組織にレビュー基準やレビュー規約が整備されていない場合はどのように対応すべきか。</div>
+        <textarea class="desc-textarea" placeholder="回答を入力してください…"></textarea>
+        <button class="check-btn" onclick="showAnswer('reveal-q15')">解答例を見る</button>
+        <div class="answer-reveal" id="reveal-q15">
+          <div class="answer-label">📝 解答例</div>
+          <div class="answer-text">レビュー基準・レビュー規約などの手続きが整備されていない場合は、どのようにレビューを行うかを関係者と必ず確認する。整備されている場合はそれに準じてレビューを実施する。</div>
+        </div>
+      </div>
+
+    </div><!-- /q-section -->
+  </div><!-- /tab-quiz -->
+
+
+  <!-- ==================== QA ==================== -->
+  <div id="tab-qa" class="tab-content">
+    <div class="quiz-header">
+      <div class="chapter-label">一問一答 — 4.1 テスト要求分析</div>
+      <div class="chapter-title" style="font-family:'Noto Serif JP',serif;font-size:1.5rem;">重要キーワード確認（全20問）</div>
+      <div class="quiz-meta">
+        <div class="quiz-stat">クリックして解答を表示</div>
+      </div>
+    </div>
+
+    <div class="qa-list" id="qaList">
+
+      <div class="qa-item active" data-section="4-1-1">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析の準備フェーズで入手すべき情報を整理する目的は何か？</span></div>
+        <div class="qa-a"><div class="qa-a-text">何をもってテスト要求を決定したか、データの出所を明らかにすること。要求を可視化することでテストの終了判定時の証跡となる。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-1">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">準備フェーズで不足情報が得られない場合の対処方法は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">不足情報を一覧化し、今後の入手の可否・時期・担当者を設定してタスク管理する。受身にならずステークホルダに要求することが重要。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-1">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">インタビュー前に「誰から何をヒアリングしたいか」を整理する理由は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">繰り返し同じステークホルダへヒアリングしないようにするため。事前整理で効率よくヒアリングを実施できる。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-2">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求の獲得において、入手した情報はどの2つに分類するか？</span></div>
+        <div class="qa-a"><div class="qa-a-text">「要求」と「阻害要因」に分類する。さらに様々な関連付けを実施する。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-2">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テストベースを一覧化することの目的は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">入手する情報が可視化され、入手すべき情報の漏れ防止につながる。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-2">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト対象のコンセプトとは何か？</span></div>
+        <div class="qa-a"><div class="qa-a-text">テスト対象が提供する価値のこと。コンセプトを把握することで、テスト対象に必要なテストや目標とする品質を検討できる。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-2">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求獲得時にコンプライアンス情報を収集する理由は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">法令や規格は暗黙知として仕様書に明示されない場合がある。規格違反を見逃さないために事前収集が必要。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-3">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">品質特性の分析で活用が推奨される国際規格は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">ISO/IEC 25010（品質特性を定義した規格）。テスト対象が利用される環境と担当するテストレベルを考慮して分析する。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-3">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">「範囲の深さ」とは何を意味するか？</span></div>
+        <div class="qa-a"><div class="qa-a-text">例えば性能要求に対してモジュール単位の応答時間を確認するのか、システム全体の応答時間を確認するのかという、テスト確認の粒度のこと。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-3">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">品質方針が適用されるISO規格は何か、そのシステムの略称も含めて答えよ。</span></div>
+        <div class="qa-a"><div class="qa-a-text">ISO 9000（品質マネジメントシステム、QMS）。QMSを適用している組織では品質についての方針やマニュアルが整備されている。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-3">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">開発進捗状況レポートとマスターテスト計画書を比較する目的は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">テスト計画に影響がある箇所を分析するため。開発の進捗・実装状況からテストの順序や単位時間あたりの消化件数への影響を把握し、リスクを事前に特定する。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-4">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析成果物に含めるべき6つの項目は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">①テスト目的 ②品質目標 ③テストベース ④テスト対象範囲 ⑤テスト対象外範囲 ⑥テスト対象の開発状況・テスト環境（テストベンチ）</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-4">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析成果物においてカバレッジとトレーサビリティを確保する方法は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">テスト要求へのインプット項目とテスト要求分析結果を可視化し関係付けを行うことで確保する。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-4">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">「テスト対象外範囲」を成果物に明記する意義は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">なぜ対象外にしたのか、誰の責務で実施されるべきかを明確にすることで、検討漏れがあった場合に早い段階で役割分担を調整できる。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-5">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析成果物のレビューで確認すべき2点は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">①要求に漏れがないこと ②要求との整合性が確認されていること</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-5">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">レビューのフォローアップとは何を指すか？</span></div>
+        <div class="qa-a"><div class="qa-a-text">レビューで指摘事項があった場合に、レビュー記録に基づいて指摘内容を修正・対応すること。全フォローアップ完了後に要求元の承認を得る。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-5">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">レビュー基準・規約がない場合の対応は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">どのようにレビューを行うかを関係者と必ず確認する。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-1">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析の主要インプットのうち「過去」の資料に該当するものは？</span></div>
+        <div class="qa-a"><div class="qa-a-text">過去テスト計画書・報告書（4.1.1のINPUT）</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-2">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト環境情報を収集する際に念頭に置くべき内容は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">テスト対象を動作させる環境だけでなく、ロギングツールやシミュレータなど必要なツール類も含めて情報を入手する。テスト環境の準備は後のテスト実行やコストに大きな影響を与える。</div></div>
+      </div>
+
+      <div class="qa-item active" data-section="4-1-3">
+        <div class="qa-q" onclick="toggleQA(this)"><span class="qa-q-icon">Q</span><span class="qa-q-text">テスト要求分析において品質目標の定義過程を記録・構造化する理由は？</span></div>
+        <div class="qa-a"><div class="qa-a-text">後工程の計画立案時などで参照するため。構造化することで参照を容易にする。また、テスト終了判定などにも用いられる。</div></div>
+      </div>
+
+    </div>
+  </div><!-- /tab-qa -->
+
+</div><!-- /container -->
+
+<script>
+// ===== TAB SWITCH =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ===== SECTION FILTER =====
+let currentSection = 'all';
+function switchSection(sec) {
+  currentSection = sec;
+  document.querySelectorAll('.sec-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  // Textbook
+  document.querySelectorAll('.section-block').forEach(b => b.classList.remove('active'));
+  document.getElementById('tb-all').classList.add('active');
+  if (sec !== 'all') {
+    const els = document.querySelectorAll(`[id="tb-${sec}"]`);
+    // show only relevant inner section
+    document.querySelectorAll('.section-block [id^="tb-"]').forEach(el => el.style.display = 'none');
+    const target = document.getElementById(`tb-${sec}`);
+    if (target) target.style.display = '';
+    document.querySelectorAll('[id="tb-all"] .page-break').forEach(pb => pb.style.display = 'none');
+  } else {
+    document.querySelectorAll('.section-block [id^="tb-"]').forEach(el => el.style.display = '');
+    document.querySelectorAll('[id="tb-all"] .page-break').forEach(pb => pb.style.display = '');
+  }
+
+  // Quiz
+  filterBySection('.question-card', sec);
+  // QA
+  filterBySection('.qa-item', sec);
+}
+
+function filterBySection(selector, sec) {
+  document.querySelectorAll(selector).forEach(card => {
+    if (sec === 'all' || card.dataset.section === sec) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// ===== CHOICE =====
+function checkChoice(btn, selected, correct) {
+  const card = btn.closest('.question-card');
+  const num = card.querySelector('.q-num').textContent.replace('Q','');
+  card.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    b.classList.add('revealed');
+    const label = b.querySelector('.choice-label').textContent;
+    if (label === correct) b.classList.add('correct');
+  });
+  if (selected !== correct) btn.classList.add('incorrect');
+  const reveal = card.querySelector('.answer-reveal');
+  if (reveal) { reveal.classList.add('show'); }
+}
+
+// ===== FILL =====
+function checkFill(id, answers) {
+  let allCorrect = true;
+  answers.forEach((ans, i) => {
+    const input = document.getElementById(id + (i === 0 ? 'a' : 'b'));
+    if (!input) return;
+    input.disabled = true;
+    const val = input.value.trim();
+    if (val === ans || val.includes(ans) || ans.includes(val)) {
+      input.classList.add('correct');
+    } else {
+      input.classList.add('incorrect');
+      allCorrect = false;
+    }
+  });
+  const reveal = document.getElementById('reveal-' + id);
+  if (reveal) reveal.classList.add('show');
+}
+
+// ===== DESC =====
+function showAnswer(id) {
+  const reveal = document.getElementById(id);
+  if (reveal) reveal.classList.add('show');
+}
+
+// ===== QA TOGGLE =====
+function toggleQA(el) {
+  const answer = el.nextElementSibling;
+  answer.classList.toggle('open');
+}
+</script>
+</body>
+</html>
