@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IVEC｜用語集</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+  --accent:#e6a817;--accent2:#3b82f6;--accent3:#10b981;--danger:#f87171;
+  --purple:#a78bfa;--teal:#2dd4bf;--orange:#fb923c;
+  --text:#e6edf3;--text-muted:#8b949e;--text-dim:#586069;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;line-height:1.75;
+  padding-bottom:calc(120px + var(--safe-bottom));
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── HEADER ── */
+header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:300;
+  height:48px;display:flex;align-items:center;padding:0 1rem;gap:.6rem;
+}
+.logo{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:.12em;font-weight:700;text-transform:uppercase;border:1px solid var(--accent);padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.header-sub{font-size:.78rem;color:var(--text-muted);flex:1}
+.header-sub span{color:var(--text);font-weight:500}
+.header-home{font-size:.7rem;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:3px 8px;white-space:nowrap;text-decoration:none;flex-shrink:0}
+
+/* ── SEARCH BAR ── */
+.search-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:.6rem 1rem;position:sticky;top:48px;z-index:200;
+}
+.search-inner{position:relative}
+.search-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:.55rem .9rem .55rem 2.2rem;
+  color:var(--text);font-size:.88rem;font-family:'Noto Sans JP',sans-serif;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;
+}
+.search-input:focus{border-color:var(--accent2)}
+.search-input::placeholder{color:var(--text-dim)}
+.search-icon{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);font-size:.85rem;color:var(--text-dim);pointer-events:none}
+.search-clear-btn{
+  position:absolute;right:.6rem;top:50%;transform:translateY(-50%);
+  background:var(--text-dim);border:none;color:var(--bg);
+  width:16px;height:16px;border-radius:50%;font-size:.6rem;
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-weight:700;
+}
+.search-clear-btn.show{display:flex}
+.search-result-text{font-size:.72rem;color:var(--text-dim);margin-top:.4rem;padding-left:.2rem}
+
+/* ── CATEGORY SCROLL ── */
+.cat-nav{
+  display:flex;gap:.4rem;overflow-x:auto;
+  padding:.6rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);
+  position:sticky;top:calc(48px + 58px);z-index:190;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.cat-nav::-webkit-scrollbar{display:none}
+.cat-btn{
+  flex-shrink:0;background:var(--surface);border:1px solid var(--border);
+  color:var(--text-muted);padding:5px 12px;font-size:.72rem;border-radius:16px;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;white-space:nowrap;
+  min-height:30px;transition:all .15s;-webkit-appearance:none;
+  display:flex;align-items:center;gap:.3rem;
+}
+.cat-btn:active{opacity:.75}
+.cat-btn.active-all{border-color:var(--accent);color:var(--accent);background:rgba(230,168,23,.1)}
+.cat-btn.active-ch4{border-color:var(--accent2);color:var(--accent2);background:rgba(59,130,246,.1)}
+.cat-btn.active-ch5a{border-color:var(--accent3);color:var(--accent3);background:rgba(16,185,129,.1)}
+.cat-btn.active-ch5b{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.1)}
+.cat-btn.active-ch5c{border-color:var(--danger);color:var(--danger);background:rgba(248,113,113,.1)}
+.cat-dot{width:7px;height:7px;border-radius:50%}
+.cnt-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;opacity:.7}
+
+/* ── SECTION FILTER ── */
+.sec-nav{
+  display:flex;gap:.35rem;overflow-x:auto;
+  padding:.5rem 1rem;background:var(--bg);border-bottom:1px solid var(--border);
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.sec-nav::-webkit-scrollbar{display:none}
+.sec-btn{
+  flex-shrink:0;background:var(--surface);border:1px solid var(--border);
+  color:var(--text-dim);padding:3px 9px;font-size:.68rem;border-radius:10px;
+  cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;
+  min-height:26px;transition:all .15s;-webkit-appearance:none;
+}
+.sec-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(230,168,23,.08)}
+
+/* ── CONTAINER ── */
+.container{padding:.8rem 1rem 1rem}
+
+/* ── RESULT HEADER ── */
+.result-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:.8rem;
+}
+.result-title{font-family:'Noto Serif JP',serif;font-size:1rem;font-weight:700;color:var(--text)}
+.result-count{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-dim)}
+
+/* ── TERM LIST ── */
+.term-list{display:flex;flex-direction:column;gap:.6rem}
+
+.term-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;transition:border-color .15s;
+}
+.term-card.open{border-color:var(--accent2)}
+.term-header{
+  padding:.85rem 1rem;display:flex;align-items:flex-start;gap:.7rem;
+  cursor:pointer;min-height:52px;
+}
+.term-header:active{background:var(--surface2)}
+.term-cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:.3rem}
+.term-main{flex:1;min-width:0}
+.term-word{font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:700;color:var(--text);line-height:1.4}
+.term-en{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text-dim);margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.term-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem}
+.term-tag{font-size:.6rem;padding:1px 6px;border-radius:8px;font-weight:700}
+.term-arrow{color:var(--text-dim);font-size:.8rem;flex-shrink:0;margin-top:.15rem;transition:transform .2s}
+.term-card.open .term-arrow{transform:rotate(90deg);color:var(--accent2)}
+
+.term-body{
+  display:none;padding:0 1rem .9rem;
+  border-top:1px solid var(--border);background:var(--surface2);
+}
+.term-card.open .term-body{display:block}
+.term-def{font-size:.87rem;color:var(--text);line-height:1.8;padding-top:.8rem}
+.term-def strong{color:var(--accent)}
+.term-point{
+  background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);
+  border-radius:8px;padding:.65rem .9rem;margin-top:.7rem;
+}
+.term-point-lbl{font-size:.65rem;color:var(--accent2);font-weight:700;letter-spacing:.07em;margin-bottom:.25rem}
+.term-point-txt{font-size:.84rem;color:#a8c0e0;line-height:1.7}
+.term-ref{margin-top:.6rem;font-size:.74rem;color:var(--text-dim)}
+.term-ref span{color:var(--text-muted)}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-dim)}
+.empty-state .icon{font-size:2rem;margin-bottom:.6rem}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;padding-bottom:var(--safe-bottom);
+}
+.bnav-btn{
+  flex:1;border:none;background:transparent;
+  color:var(--text-muted);
+  padding:10px 4px 8px;
+  font-family:'Noto Sans JP',sans-serif;font-size:.62rem;font-weight:500;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.bnav-btn .bicon{font-size:1rem;line-height:1}
+.bnav-btn.active{color:var(--accent)}
+
+/* ── COLORS ── */
+.dot-all{background:var(--accent)}
+.dot-ch4{background:var(--accent2)}
+.dot-ch5a{background:var(--accent3)}
+.dot-ch5b{background:var(--teal)}
+.dot-ch5c{background:var(--danger)}
+
+.tag-ch4{background:rgba(59,130,246,.12);color:#60a5fa}
+.tag-ch5a{background:rgba(16,185,129,.12);color:var(--accent3)}
+.tag-ch5b{background:rgba(45,212,191,.12);color:var(--teal)}
+.tag-ch5c{background:rgba(248,113,113,.12);color:var(--danger)}
+.tag-key{background:rgba(230,168,23,.12);color:var(--accent)}
+.tag-sec{background:rgba(167,139,250,.12);color:var(--purple)}
+.tag-io{background:rgba(251,146,60,.12);color:var(--orange)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IVEC</div>
+  <div class="header-sub">アーキテクトクラス｜<span>用語集</span></div>
+  <a href="index.html" class="header-home">🏠 TOP</a>
+</header>
+
+<!-- 検索バー -->
+<div class="search-bar">
+  <div class="search-inner">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="用語を検索…" oninput="doSearch(this.value)" autocomplete="off">
+    <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()">✕</button>
+  </div>
+  <div class="search-result-text" id="searchResultText"></div>
+</div>
+
+<!-- カテゴリナビ -->
+<div class="cat-nav">
+  <button class="cat-btn active-all" id="catAll" onclick="filterCat('all',this)">
+    <span class="cat-dot dot-all"></span>すべて<span class="cnt-badge" id="cntAll"></span>
+  </button>
+  <button class="cat-btn" id="catCh4" onclick="filterCat('ch4',this)">
+    <span class="cat-dot dot-ch4"></span>第4章<span class="cnt-badge" id="cntCh4"></span>
+  </button>
+  <button class="cat-btn" id="catCh5a" onclick="filterCat('ch5a',this)">
+    <span class="cat-dot dot-ch5a"></span>自動化<span class="cnt-badge" id="cntCh5a"></span>
+  </button>
+  <button class="cat-btn" id="catCh5b" onclick="filterCat('ch5b',this)">
+    <span class="cat-dot dot-ch5b"></span>IoT<span class="cnt-badge" id="cntCh5b"></span>
+  </button>
+  <button class="cat-btn" id="catCh5c" onclick="filterCat('ch5c',this)">
+    <span class="cat-dot dot-ch5c"></span>セキュリティ<span class="cnt-badge" id="cntCh5c"></span>
+  </button>
+</div>
+
+<!-- 節フィルター -->
+<div class="sec-nav">
+  <button class="sec-btn active" id="secAll" onclick="filterSec('',this)">全節</button>
+  <button class="sec-btn" onclick="filterSec('4.1',this)">4.1</button>
+  <button class="sec-btn" onclick="filterSec('4.2',this)">4.2</button>
+  <button class="sec-btn" onclick="filterSec('4.3',this)">4.3</button>
+  <button class="sec-btn" onclick="filterSec('5.1',this)">5.1</button>
+  <button class="sec-btn" onclick="filterSec('5.2',this)">5.2</button>
+  <button class="sec-btn" onclick="filterSec('5.3',this)">5.3</button>
+</div>
+
+<div class="container">
+  <div class="result-header">
+    <div class="result-title" id="resultTitle">全用語</div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+  <div class="term-list" id="termList"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="icon">🔍</div>
+    <div>該当する用語が見つかりません</div>
+  </div>
+</div>
+
+<!-- ボトムナビ -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" onclick="goHome()"><span class="bicon">🏠</span>TOP</button>
+  <button class="bnav-btn" onclick="scrollToTop()"><span class="bicon">⬆</span>先頭へ</button>
+  <button class="bnav-btn" onclick="focusSearch()"><span class="bicon">🔍</span>検索</button>
+  <button class="bnav-btn" onclick="openRandom()"><span class="bicon">🎲</span>ランダム</button>
+</nav>
+
+<script>
+// =====================================================================
+// TERMS DATA（同一データ）
+// =====================================================================
+const TERMS = [
+  // ── 4.1 テスト要求分析 ──
+  {word:'テスト要求分析',en:'Test Requirements Analysis',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テストプロジェクトへの要求そのものに加えて、テスト対象・テスト対象外の範囲や制約事項などの情報を入手して分析し、<strong>テスト要件として定義するプロセス</strong>。テスト活動のゴール（終了基準・リリース基準など）の根拠となる重要なプロセス。',
+   point:'テスト活動のゴールがテスト要求に基づいて定義されていないと、収束に向かわせることが困難になる。'},
+  {word:'ステークホルダ',en:'Stakeholder',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テスト要求に関係する関係者の総称。<strong>要求元・利用者・開発者</strong>など役割によって異なる。ユーザ要求の場合は「利用者」、保守要求の場合は「管理者」をインタビュー対象としてアサインする。',
+   point:'繰り返し同じステークホルダへヒアリングしないよう、最初に誰から何をヒアリングしたいかを事前に整理することが重要。'},
+  {word:'テストベース',en:'Test Basis',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テストの根拠となるドキュメントや成果物。要求仕様書・設計書・ユーザマニュアル等が含まれる。一覧化することで<strong>入手すべき情報の漏れ防止</strong>につながる。開発の状況によって<strong>改変される可能性</strong>があることを考慮して管理する。',
+   ref:'関連節：4.1.2・4.2.2'},
+  {word:'コンプライアンス情報',en:'Compliance Information',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テスト対象が準拠すべき<strong>法令・規格・標準</strong>に関する情報。仕様書に明示されない<strong>暗黙知</strong>として存在する場合があるため、事前収集が不可欠。',
+   point:'コンプライアンス要件は仕様書に暗黙知として明示されない場合がある。規格違反を見逃さないために事前収集が必要。'},
+  {word:'不足情報管理表',en:'Missing Information Management',cat:'ch4',sec:'4.1',
+   tags:['4.1','成果物'],
+   def:'開発中・要件未決定などでヒアリング結果が得られない場合に作成する管理表。<strong>入手の可否・時期・担当者</strong>を設定してタスクとして管理する。受身にならず期限を設けてステークホルダに要求することが重要。'},
+  {word:'品質方針',en:'Quality Policy',cat:'ch4',sec:'4.1',
+   tags:['4.1','品質'],
+   def:'企業や組織がプロジェクトにおける品質の方向性を定めた方針。QMS（品質マネジメントシステム）を適用している組織では品質についての方針やマニュアルが整備されている。テスト計画における<strong>品質目標設定の基準</strong>となる。',
+   ref:'ISO 9000（QMS）が関連'},
+  {word:'品質目標',en:'Quality Goal',cat:'ch4',sec:'4.1',
+   tags:['4.1','品質'],
+   def:'テスト活動が達成すべき品質の数値目標。例：「許容できるシステムダウンタイム」「応答性能の閾値」など。<strong>テスト終了判定</strong>にも用いられる。目標値を定義した分析過程は後工程で参照するため記録・構造化が必要。'},
+  {word:'テスト対象外範囲',en:'Out-of-Scope',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テストの対象としない範囲。記載が曖昧になりがちな項目であり、「<strong>なぜ対象外か</strong>」「<strong>誰の責務で実施すべきか</strong>（もしくは実施しないのか）」を明確にすることで、検討漏れがあった場合に早い段階で役割分担を調整できる。'},
+  {word:'トレーサビリティ',en:'Traceability',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テスト要求がどの情報源（ドキュメント・インタビュー等）に基づいているかを<strong>追跡できる仕組み</strong>。入手したドキュメントの一覧を作成・記録することで、作成したテスト要求の根拠を主張できる。',
+   point:'カバレッジとトレーサビリティの確保がテスト要求分析成果物の核心。'},
+  {word:'カバレッジ',en:'Coverage',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テスト要求の網羅度。インプット項目と分析結果を<strong>可視化・関連付け</strong>することで確保する。テスト要求分析成果物においてトレーサビリティとともに確保が求められる。'},
+  {word:'ISO/IEC 25010',en:'ISO/IEC 25010',cat:'ch4',sec:'4.1',
+   tags:['4.1','規格'],
+   def:'ソフトウェア品質特性を定義した国際規格。<strong>機能適合性・性能効率性・互換性・使いやすさ・信頼性・セキュリティ・保守性・移植性</strong>の8特性で構成される。テスト観点として活用し、テスト対象が利用される環境と担当するテストレベルを考慮して分析する。'},
+  {word:'利用時品質',en:'Quality in Use',cat:'ch4',sec:'4.1',
+   tags:['4.1','品質'],
+   def:'ISO/IEC 25010の品質モデルの一つ。実際の利用環境でユーザが製品を使用した際に感じる品質。ユーザ寄りのテストアーキテクチャスタイルでは<strong>利用時品質を用いてカバレッジを説明</strong>することができる。'},
+  {word:'範囲の深さ',en:'Scope Depth',cat:'ch4',sec:'4.1',
+   tags:['4.1','汎用'],
+   def:'テスト対象の確認粒度のこと。例えば性能要求に対して<strong>モジュール単位の応答時間</strong>を確認するのか<strong>システム全体の応答時間</strong>を確認するのかは、テストレベルの対象範囲によって決まる。'},
+  // ── 4.2 テストアーキテクチャ設計 ──
+  {word:'テストアーキテクチャ設計',en:'Test Architecture Design',cat:'ch4',sec:'4.2',
+   tags:['4.2','汎用'],
+   def:'テスト要求分析の結果からテストの<strong>実現方式の立案</strong>を行うプロセス。テスト対象の品質特性や環境を考慮したテストツール・テスト技法・テストマネジメント方法・テストベンチ（環境）などの選定や定義を行う。'},
+  {word:'アーキテクチャスタイル',en:'Architecture Style',cat:'ch4',sec:'4.2',
+   tags:['4.2','汎用'],
+   def:'テスト対象の品質が確保されることを表すための指標。IVECにおける原則：①テスト要求を実現するため必要な技術として普及しているもの、②テスト要求を実現できることを説明できること、③構造化されていること。テスト要求だけでなく<strong>テストプロジェクトの習熟度</strong>などにも影響を受ける。'},
+  {word:'テストポリシー',en:'Test Policy',cat:'ch4',sec:'4.2',
+   tags:['4.2','成果物'],
+   def:'テスト要求分析の成果物から定義する、テスト全体の方針。アーキテクチャスタイルの選択・構造設計・バランス調整のすべてを貫く方向性を示す。'},
+  {word:'QCDMM分析',en:'QCDMM Analysis',cat:'ch4',sec:'4.2',
+   tags:['4.2','手法'],
+   def:'アーキテクチャスタイルを選択する際に行う総合分析。<strong>Q：品質、C：コスト、D：納期、M：マネジメント、M：マーケット（ターゲット）</strong>の5要素から構成される。',
+   point:'QCDMMの5要素を覚えること。最後のMはマーケット（ターゲット）であり、マシンやマニュアルではない点に注意。'},
+  {word:'プロダクトリスク',en:'Product Risk',cat:'ch4',sec:'4.2',
+   tags:['4.2','汎用'],
+   def:'テスト対象のプロダクト・システムに関わるリスク。担当するテストレベルの範囲外、<strong>特に次工程のテストレベルに影響するリスク</strong>は手戻り抑止のために意識する必要がある。'},
+  {word:'設計のポリシー',en:'Design Policy',cat:'ch4',sec:'4.2',
+   tags:['4.2','汎用'],
+   def:'テスト詳細設計の実施概要検討で明確にすべき方針。「テストの目的や、<strong>何を、どこまでテストするのか、それでなにを担保するのか</strong>」を明確に示したもの。ポリシーが不明確だと大規模プロジェクトでテストタイプごとにテストする粒度が異なり、統一した粒度でテストができなくなる。'},
+  {word:'不具合発生率予測',en:'Defect Prediction Rate',cat:'ch4',sec:'4.2',
+   tags:['4.2','汎用'],
+   def:'過去の実績・開発量・コード変更量・難易度などを考慮して予測する、テストで検出されると見込まれる不具合の率。テストアーキテクチャスタイルの要求分析の成果物として算出される。'},
+  {word:'テストタスクWBS',en:'Test Task WBS',cat:'ch4',sec:'4.2',
+   tags:['4.2','成果物'],
+   def:'テスト活動の作業分解構造（Work Breakdown Structure）。テスト計画書の構成要素の一つ。テスト実施に必要な全タスクを階層的に分解して定義する。'},
+  {word:'テスト環境ファシリティ構成',en:'Test Environment Facility',cat:'ch4',sec:'4.2',
+   tags:['4.2','成果物'],
+   def:'テスト環境の構築方針・構築方法から、必要とされるファシリティ（設備・機器・場所等）を定義した構成。4.2.8テスト環境の構築方針・方法を検討するのOUTPUT。'},
+  {word:'プロジェクト改善計画',en:'Project Improvement Plan',cat:'ch4',sec:'4.2',
+   tags:['4.2','成果物'],
+   def:'テストプロジェクトの立ち上げ時に前回の改善課題がある場合に作成される計画書。テスト詳細設計・テスト実行などすべてのテスト工程で立案・作成される。テスト計画書の構成要素の一つ。'},
+  // ── 4.3 テスト評価 ──
+  {word:'テスト評価',en:'Test Evaluation',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'テスト報告書を含むテスト活動の全ての情報や結果を用いて、テスト活動の<strong>達成度合いを分析および評価</strong>するプロセス。ポストモーテムを行いプロジェクト成果および改善点の展開も行う。'},
+  {word:'ポストモーテム',en:'Post-mortem',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'プロジェクト終了後に実施する<strong>振り返り活動</strong>。成功・失敗を問わずプロジェクトを総括し、次回プロジェクトへの改善点を抽出・展開する。テスト評価フェーズの中核的な活動。'},
+  {word:'TMap',en:'TMap',cat:'ch4',sec:'4.3',
+   tags:['4.3','手法'],
+   def:'SOGETI社によって提案されたテストプロセスの方法論。<strong>20のキーエリアを13のスケールで構造化</strong>したテストプロセスの方法論。テストプロセス改善に用いられる。',
+   point:'TMapの数字は頻出。20キーエリア・13スケール・SOGETI社をセットで記憶する。'},
+  {word:'ボトルネック抽出',en:'Bottleneck Extraction',cat:'ch4',sec:'4.3',
+   tags:['4.3','手法'],
+   def:'テスト活動の定量的データ（実績データ）と基準となる指標のデータを比較して、テスト活動における<strong>課題箇所を特定</strong>すること。テスト計画と実績の差異を数値的なデータから分析し見積精度の改善につなげる。'},
+  {word:'達成率評価',en:'Achievement Rate Evaluation',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'プロジェクト改善計画で立案した改善項目とテスト活動の実績データを比較し、<strong>達成率を算出</strong>すること。担当者のアンケートだけでなく数値的に実績データと比較することで<strong>客観的に評価</strong>することが重要。'},
+  {word:'水平展開',en:'Horizontal Rollout',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'テスト活動の技術情報・改善成果・失敗事例などを<strong>他のテストプロジェクトにも広く共有・活用</strong>すること。テスト評価報告書の開示（4.3.9）の目的の一つ。'},
+  {word:'改善処置対策書',en:'Improvement Action Plan',cat:'ch4',sec:'4.3',
+   tags:['4.3','成果物'],
+   def:'改善策を検討する（4.3.7）のOUTPUT。プロジェクトの反省点・改善点の影響度合いを分析し、<strong>影響度が高く発生確率・回数が多い項目を優先度高</strong>に設定し、根治対策または回避方策・再発防止策を記載した文書。'},
+  {word:'根治対策',en:'Root Cause Solution',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'問題の<strong>根本原因を取り除く</strong>対策。改善策検討（4.3.7）で検討する対策の一種。発生確率・回数が多い項目に優先的に適用する。'},
+  {word:'テストリポジトリ',en:'Test Repository',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'テスト活動に関する経験（暗黙知・ノウハウ）を定量的・定性的な情報として蓄積する<strong>データ管理の仕組み</strong>。テスト活動の分析で作成したデータを登録し、次回プロジェクトへの技術資産として活用する。'},
+  {word:'満足度（充足度）判定',en:'Satisfaction Judgment',cat:'ch4',sec:'4.3',
+   tags:['4.3','汎用'],
+   def:'プロジェクト改善の目的との差異を、改善目標の達成率や改善のねらいの達成度合いで判定すること（4.3.5）。この満足度の判定から評価指標の見直しを行う。'},
+  // ── 5.1 テスト自動化 ──
+  {word:'ROI（投資対効果）',en:'Return on Investment',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化','重要'],
+   def:'<strong>利益÷投資額×100（%）</strong>で算出。利益＝「削減できた手動テストの人件費」「手戻り抑止により削減できた開発費用」など。投資額＝「導入費用」「保守費用」。金額で計測できない効果も総合的に判断する。',
+   point:'ROI＝利益÷投資額×100（%）の算式は頻出。利益と投資額の具体例をセットで覚える。'},
+  {word:'PoC（Proof of Concept）',en:'Proof of Concept',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'概念実証。情報精査だけでは実現性の判断が難しい場合に、実際にいくつかのテスト自動化ツールをピックアップして行う実証実験。<strong>技術的実現性</strong>と<strong>費用対効果面での実現性</strong>を判定する。'},
+  {word:'フィージビリティチェック',en:'Feasibility Check',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化の実現可能性を調査する活動。対象プロダクト・プロジェクトの情報を分析し、技術的実現性と費用対効果を判断する。PoCと組み合わせて実施することが多い。'},
+  {word:'スモールスタート',en:'Small Start',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化の実装を<strong>スコープを限定した小規模から始め、段階的に拡大</strong>していく進め方。重要度の高いテストケースを優先して段階的に実装スケジュールを計画する。'},
+  {word:'CI/CDパイプライン',en:'CI/CD Pipeline',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'継続的インテグレーション（CI）と継続的デリバリー（CD）のパイプライン。コードのコミット・マージ時に<strong>自動でテストを開始</strong>し、テスト結果をパイプラインのステータスとしてフィードバックする。'},
+  {word:'自動化カバレッジ',en:'Automation Coverage',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化','メトリクス'],
+   def:'自動化されたテストケースの割合、および全体の機能に対する自動化のカバー率。テスト自動化の効果測定（5.1.4）で定量化する指標の一つ。'},
+  {word:'スケーラビリティ',en:'Scalability',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化ツール選定における考慮事項の一つ。大量のテストの管理、長時間の連続実行、複数テストの<strong>並列実行</strong>などへの対応能力。'},
+  {word:'変更管理（自動化）',en:'Change Management',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化における管理計画の一つ。テスト環境・テスト対象・テスト内容が変化した場合の<strong>変更管理プロセス</strong>を定義する。スクリプトに変更があった場合のレビュープロセスやマージルールなども含む。'},
+  {word:'構成管理（自動化）',en:'Configuration Management',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化における管理計画の一つ。自動テストシステムと作成したスクリプトについて、<strong>バージョン管理システム・フォルダ構成・ブランチ戦略</strong>などのルールを明確化する管理方法。'},
+  {word:'エラーハンドリング',en:'Error Handling',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'自動テスト失敗時の処理設計。<strong>状態復帰・リトライ設定・アラート通知</strong>などによりテストの堅牢性や継続性を向上させる。'},
+  {word:'費用対効果の再計算',en:'ROI Recalculation',cat:'ch5a',sec:'5.1',
+   tags:['5.1','自動化'],
+   def:'テスト自動化の効果測定フェーズで実施する。分析段階の<strong>予測値から実際の運用データを用いた実績値</strong>での費用対効果算出。今後の予算計画に反映することを目的とする。'},
+  // ── 5.2 IoT関連 ──
+  {word:'IoTシステム',en:'IoT System',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'従来繋がらなかった機器がネットワークに繋がるシステム。新たな価値の創出・利便性向上が得られる一方、<strong>新たな脅威や危害が起こる懸念</strong>がある。不正な侵入・改ざんにより身体や財産に危害が及ぶ可能性がある。'},
+  {word:'IoT社会的影響の想定',en:'IoT Social Impact',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'IoTテスト要求分析における重要タスク。守るべきもの（通信機能・本来機能・情報など）を整理し、<strong>社会・人命・財産などへの影響</strong>を検討する。IoTシステム内・間の脆弱性セキュリティの検討も必須。'},
+  {word:'テストの組合せ爆発',en:'Combinatorial Explosion',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'IoTシステムは様々な機器・環境・利用者の組み合わせが膨大になるため、テストケース数が<strong>指数的に増大する</strong>可能性があること。検証プロジェクト自体のリスク対策として、対策の準備と見積もり精度が重要。'},
+  {word:'品質の説明責任',en:'Quality Accountability',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'IoTテスト方針策定における3点：①品質目標の決定と承認手続きの明確化、②適正品質を確保するためのテスト方針の明確化、③<strong>プロセス通りに実施していることのエビデンスの確保</strong>。'},
+  {word:'UX（ユーザ体験）評価',en:'UX Evaluation',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'多様な利用者（幼児〜高齢者・色弱・ITリテラシーの高低・外国人・<strong>悪意を持った人</strong>）の期待を分析する際に考慮する評価視点。様々な利用環境（屋内/屋外・ノイズ・高温多湿等）も想定する。'},
+  {word:'リモートアップデート',en:'Remote Update (OTA)',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'IoT機器・システムの特徴を考慮したテストの方針で特に検討が必要な事項の例。<strong>長期間の利用に係わる保守・運用向けの機能</strong>として明示されている。'},
+  {word:'テスト合否判定の合意',en:'Test Criteria Agreement',cat:'ch5b',sec:'5.2',
+   tags:['5.2','IoT'],
+   def:'IoTのテスト範囲の明確化と関係者間の合意において重要な合意事項。「<strong>何をもってOKとするか</strong>」「どのようなエビデンスが必要か」を依頼元と事前に合意する。'},
+  // ── 5.3 セキュリティテスト ──
+  {word:'STRIDE',en:'STRIDE',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','重要'],
+   def:'Microsoftが提唱したセキュリティ脅威分類手法。<br><strong>S：Spoofing（なりすまし）</strong><br><strong>T：Tampering（改ざん）</strong><br><strong>R：Repudiation（否認）</strong><br><strong>I：Information Disclosure（情報漏えい）</strong><br><strong>D：Denial of Service（サービス拒否）</strong><br><strong>E：Elevation of Privilege（権限昇格）</strong>',
+   point:'STRIDEの6要素はS・T・R・I・D・Eの頭文字で覚える。各要素の意味を説明できるようにする。'},
+  {word:'LINDDUN',en:'LINDDUN',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','重要'],
+   def:'プライバシー保護の脅威分析手法。特に<strong>個人情報保護法・GDPR準拠</strong>が必要なプロジェクトで必須。L：Linkability／I：Identifiability／N：Non-repudiation／D：Detectability／D：Disclosure／U：Unawareness／N：Non-compliance',
+   point:'STRIDEはセキュリティ脅威、LINDDUNはプライバシー脅威。両者を併用することで攻撃者視点と利用者視点の両面から脅威を洗い出せる。'},
+  {word:'SDL（セキュリティ開発ライフサイクル）',en:'Security Development Lifecycle',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'「<strong>後からの対策ではなく最初から対策を組み込む</strong>」ことを前提とした手法。各工程：要件定義（法令確認・要求文書化）→設計（脅威モデリング）→実装（安全なコーディング規約）→テスト（SAST・DAST・IAST・ペネトレーションテスト）→リリース→運用（脆弱性収集・監視・インシデント対応）。'},
+  {word:'リスク回避',en:'Risk Avoidance',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','リスク'],
+   def:'脅威の軽減分類の一つ。<strong>リスクを発生する原因を取り除く</strong>対策。リスク低減・リスク移転・リスク保有（受容）と並ぶ4分類の一つ。'},
+  {word:'リスク低減',en:'Risk Reduction',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','リスク'],
+   def:'脅威の軽減分類の一つ。<strong>リスクが発生する確率を下げる、もしくは影響度を減らす</strong>対策。認証強化・暗号化・アクセス制御などが該当する。'},
+  {word:'リスク移転',en:'Risk Transfer',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','リスク'],
+   def:'脅威の軽減分類の一つ。<strong>リスクを自社から第三者へ移すこと</strong>。例：「保険への加入」。'},
+  {word:'リスク保有（受容）',en:'Risk Acceptance',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','リスク'],
+   def:'脅威の軽減分類の一つ。<strong>発生する確率や影響度が低い場合、リスクの対応をせず受け入れる</strong>判断。'},
+  {word:'CVSSスコア',en:'CVSS Score',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'Common Vulnerability Scoring System。検出された<strong>脆弱性の重大度を数値化</strong>した指標。自動セキュリティツールで検出された脆弱性のセキュリティリスク評価に活用する。'},
+  {word:'偽陽性（False Positive）',en:'False Positive',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'自動セキュリティツールが<strong>実際には問題のない箇所を脆弱性として誤検出</strong>すること。必要に応じて専門家や開発者に切り分けを依頼する。'},
+  {word:'WAF（Web Application Firewall）',en:'WAF',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'Webアプリケーションへの攻撃を検知・防御するセキュリティ機能。WAFがテストを妨げる場合は①WAFを一時的に無効化してテストを実施、または②WAFを含まないローカル環境で検証する。<strong>いずれの場合も残存リスクを明示し関係者の合意を得る</strong>必要がある。'},
+  {word:'リスク受容文書',en:'Risk Acceptance Document',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'セキュリティテスト計画における合意形成の具体策の一つ。<strong>残存リスクや影響を整理し、責任者が承認</strong>する文書。'},
+  {word:'SAST/DAST/IAST',en:'SAST/DAST/IAST',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'セキュリティテストの手法。<strong>SAST</strong>（静的解析）・<strong>DAST</strong>（動的解析）・<strong>IAST</strong>（実行時解析）。SDLのテスト工程で実施する手法として列挙される。'},
+  {word:'ペネトレーションテスト',en:'Penetration Testing',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ'],
+   def:'実際の攻撃手法を用いてシステムへの侵入を試みるセキュリティテスト。<strong>悪意のある攻撃者の視点</strong>でシステムの脆弱性を検出する。SDLのテスト工程で実施する手法の一つ。'},
+  {word:'ISO/IEC 27001',en:'ISO/IEC 27001',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','規格'],
+   def:'情報セキュリティマネジメントシステム（ISMS）の国際規格。セキュリティ要件の抽出（5.3.1）で参照する法令・規格・ガイドラインの例として挙げられる。'},
+  {word:'GDPR',en:'General Data Protection Regulation',cat:'ch5c',sec:'5.3',
+   tags:['5.3','セキュリティ','規格'],
+   def:'EU一般データ保護規則。LINDDUNが特に必要になるプロジェクトの例として挙げられ、IoTのテスト方針策定においても海外の法律への対応として検討が必要。'},
+];
+
+// =====================================================================
+// STATE
+// =====================================================================
+let currentCat = 'all';
+let currentSec = '';
+let searchQuery = '';
+
+function getFiltered() {
+  return TERMS.filter(t => {
+    const matchCat = currentCat === 'all' || t.cat === currentCat;
+    const matchSec = !currentSec || t.sec === currentSec;
+    const q = searchQuery.toLowerCase();
+    const matchQ = !q ||
+      t.word.toLowerCase().includes(q) ||
+      (t.en && t.en.toLowerCase().includes(q)) ||
+      t.def.toLowerCase().includes(q) ||
+      (t.point && t.point.toLowerCase().includes(q));
+    return matchCat && matchSec && matchQ;
+  });
+}
+
+function dotClass(cat){return {ch4:'dot-ch4',ch5a:'dot-ch5a',ch5b:'dot-ch5b',ch5c:'dot-ch5c'}[cat]||'dot-all'}
+function tagClass(tag){
+  const m={ch4:'tag-ch4',ch5a:'tag-ch5a',ch5b:'tag-ch5b',ch5c:'tag-ch5c','自動化':'tag-ch5a','IoT':'tag-ch5b','セキュリティ':'tag-ch5c','リスク':'tag-sec','重要':'tag-io','メトリクス':'tag-sec','規格':'tag-sec','手法':'tag-sec','成果物':'tag-io','品質':'tag-ch4','汎用':'tag-ch4'};
+  return m[tag]||'tag-key';
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp(escaped,'gi'), m => `<mark style="background:rgba(230,168,23,.3);color:var(--accent);border-radius:2px;padding:0 1px">${m}</mark>`);
+}
+
+// =====================================================================
+// RENDER
+// =====================================================================
+function render() {
+  const filtered = getFiltered();
+  const list = document.getElementById('termList');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('resultCount').textContent = `${filtered.length}語`;
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = filtered.map((t,i) => `
+    <div class="term-card" id="tc${i}" onclick="toggleCard(this)">
+      <div class="term-header">
+        <span class="term-cat-dot ${dotClass(t.cat)}"></span>
+        <div class="term-main">
+          <div class="term-word">${highlight(t.word, searchQuery)}</div>
+          ${t.en ? `<div class="term-en">${t.en}</div>` : ''}
+          <div class="term-tags">${(t.tags||[]).map(tag=>`<span class="term-tag ${tagClass(tag)}">${tag}</span>`).join('')}</div>
+        </div>
+        <span class="term-arrow">›</span>
+      </div>
+      <div class="term-body">
+        <div class="term-def">${highlight(t.def, searchQuery)}</div>
+        ${t.point ? `<div class="term-point"><div class="term-point-lbl">🎯 学習のポイント</div><div class="term-point-txt">${highlight(t.point, searchQuery)}</div></div>` : ''}
+        ${t.ref ? `<div class="term-ref">📎 参考：<span>${t.ref}</span></div>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+// =====================================================================
+// FILTER
+// =====================================================================
+const CAT_ACTIVE = {
+  all:'active-all',ch4:'active-ch4',ch5a:'active-ch5a',ch5b:'active-ch5b',ch5c:'active-ch5c'
+};
+const CAT_IDS = {all:'catAll',ch4:'catCh4',ch5a:'catCh5a',ch5b:'catCh5b',ch5c:'catCh5c'};
+const CAT_TITLES = {all:'全用語',ch4:'第4章 汎用テスト',ch5a:'5.1 テスト自動化',ch5b:'5.2 IoT関連',ch5c:'5.3 セキュリティテスト'};
+
+function filterCat(cat, btn) {
+  currentCat = cat; currentSec = '';
+  // reset cat buttons
+  Object.keys(CAT_IDS).forEach(k => {
+    const el = document.getElementById(CAT_IDS[k]);
+    if (el) el.className = 'cat-btn';
+  });
+  btn.className = 'cat-btn ' + CAT_ACTIVE[cat];
+  // reset sec buttons
+  document.querySelectorAll('.sec-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('secAll').classList.add('active');
+  document.getElementById('resultTitle').textContent = CAT_TITLES[cat]||'全用語';
+  render();
+  window.scrollTo(0,0);
+}
+
+function filterSec(sec, btn) {
+  currentSec = sec;
+  document.querySelectorAll('.sec-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const secMap = {'':'全節','4.1':'4.1 テスト要求分析','4.2':'4.2 アーキテクチャ設計','4.3':'4.3 テスト評価','5.1':'5.1 テスト自動化','5.2':'5.2 IoT関連','5.3':'5.3 セキュリティテスト'};
+  document.getElementById('resultTitle').textContent = sec ? secMap[sec]||sec : (CAT_TITLES[currentCat]||'全用語');
+  render();
+  window.scrollTo(0,0);
+}
+
+// =====================================================================
+// SEARCH
+// =====================================================================
+function doSearch(val) {
+  searchQuery = val.trim();
+  const clearBtn = document.getElementById('searchClearBtn');
+  clearBtn.classList.toggle('show', !!val);
+  if (val) {
+    document.getElementById('resultTitle').textContent = `検索：「${val}」`;
+  } else {
+    document.getElementById('resultTitle').textContent = CAT_TITLES[currentCat]||'全用語';
+  }
+  render();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  document.getElementById('searchClearBtn').classList.remove('show');
+  document.getElementById('resultTitle').textContent = CAT_TITLES[currentCat]||'全用語';
+  render();
+}
+
+// =====================================================================
+// BOTTOM NAV ACTIONS
+// =====================================================================
+function goHome() { window.location.href = 'index.html'; }
+function scrollToTop() { window.scrollTo({top:0,behavior:'smooth'}); }
+function focusSearch() {
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(() => document.getElementById('searchInput').focus(), 300);
+}
+function openRandom() {
+  const filtered = getFiltered();
+  if (filtered.length === 0) return;
+  const rand = filtered[Math.floor(Math.random() * filtered.length)];
+  // close all
+  document.querySelectorAll('.term-card.open').forEach(c => c.classList.remove('open'));
+  // find and open
+  const cards = document.querySelectorAll('.term-card');
+  cards.forEach(card => {
+    const wordEl = card.querySelector('.term-word');
+    if (wordEl && wordEl.textContent.trim() === rand.word) {
+      card.classList.add('open');
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+}
+
+// =====================================================================
+// COUNTS
+// =====================================================================
+function updateCounts() {
+  document.getElementById('cntAll').textContent = TERMS.length;
+  document.getElementById('cntCh4').textContent = TERMS.filter(t=>t.cat==='ch4').length;
+  document.getElementById('cntCh5a').textContent = TERMS.filter(t=>t.cat==='ch5a').length;
+  document.getElementById('cntCh5b').textContent = TERMS.filter(t=>t.cat==='ch5b').length;
+  document.getElementById('cntCh5c').textContent = TERMS.filter(t=>t.cat==='ch5c').length;
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  updateCounts();
+  document.getElementById('resultTitle').textContent = '全用語';
+  render();
+});
+</script>
+</body>
+</html>
