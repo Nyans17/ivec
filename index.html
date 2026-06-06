@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IVEC アーキテクトクラス｜学習教材 TOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e17;--surface:#111827;--surface2:#1a2235;--border:#1e3050;
+  --gold:#f0c040;--gold2:#e6a817;--gold-dim:rgba(240,192,64,.1);
+  --blue:#4a9eff;--blue2:#3b82f6;--blue-dim:rgba(74,158,255,.1);
+  --green:#34d399;--green-dim:rgba(52,211,153,.1);
+  --red:#f87171;--purple:#a78bfa;--orange:#fb923c;
+  --text:#e8f0fe;--text-muted:#7a9cc8;--text-dim:#3a5070;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 100% 40% at 50% 0%,rgba(74,158,255,.06),transparent),
+    radial-gradient(ellipse 60% 30% at 90% 80%,rgba(167,139,250,.04),transparent);
+  color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;
+  line-height:1.75;
+  min-height:100vh;
+  padding-bottom:calc(24px + var(--safe-bottom));
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── HEADER ── */
+header{
+  background:rgba(17,24,39,.97);
+  border-bottom:1px solid var(--border);
+  padding:0 1.2rem;
+  height:52px;
+  display:flex;align-items:center;gap:.7rem;
+  position:sticky;top:0;z-index:100;
+}
+.logo{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;color:var(--gold);letter-spacing:.15em;
+  font-weight:700;text-transform:uppercase;
+  border:1px solid var(--gold2);padding:3px 8px;border-radius:4px;
+  white-space:nowrap;
+}
+.header-title{
+  font-size:.8rem;color:var(--text-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.header-title span{color:var(--text);font-weight:500}
+
+/* ── HERO ── */
+.hero{
+  padding:2rem 1.2rem 1.5rem;
+  text-align:center;
+}
+.hero-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;color:var(--gold);letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:.6rem;
+}
+.hero-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:1.5rem;font-weight:700;color:var(--text);
+  line-height:1.4;margin-bottom:.5rem;
+}
+.hero-sub{font-size:.84rem;color:var(--text-muted);line-height:1.7}
+
+/* ── EXAM INFO ── */
+.exam-info{
+  margin:0 1.2rem 1.5rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1rem 1.2rem;
+}
+.exam-info-title{
+  font-size:.7rem;color:var(--gold);font-weight:700;
+  letter-spacing:.1em;margin-bottom:.8rem;
+  font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+}
+.exam-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:5px 12px;
+  font-size:.75rem;color:var(--text-muted);
+  display:flex;align-items:center;gap:.3rem;
+}
+.chip strong{color:var(--text)}
+
+/* ── SECTION TITLE ── */
+.section-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:var(--text-muted);
+  letter-spacing:.18em;text-transform:uppercase;
+  padding:0 1.2rem;margin-bottom:.8rem;margin-top:1.5rem;
+}
+
+/* ── CARD GRID ── */
+.card-grid{
+  display:flex;flex-direction:column;gap:.8rem;
+  padding:0 1.2rem;
+}
+
+/* ── MATERIAL CARD ── */
+.mat-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  text-decoration:none;
+  display:flex;align-items:stretch;
+  overflow:hidden;
+  transition:all .2s;
+  position:relative;
+}
+.mat-card:active{transform:scale(.98);opacity:.9}
+.mat-card-accent{
+  width:4px;flex-shrink:0;
+}
+.mat-card-body{
+  flex:1;padding:.95rem 1.1rem;
+  display:flex;flex-direction:column;gap:.35rem;
+}
+.mat-card-header{display:flex;align-items:center;gap:.5rem}
+.mat-card-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;font-weight:700;
+  padding:2px 7px;border-radius:4px;
+  letter-spacing:.08em;white-space:nowrap;
+}
+.mat-card-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:.98rem;font-weight:700;color:var(--text);
+  line-height:1.4;
+}
+.mat-card-desc{font-size:.78rem;color:var(--text-muted);line-height:1.6}
+.mat-card-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
+.tag{
+  font-size:.65rem;padding:2px 7px;border-radius:10px;
+  font-weight:700;white-space:nowrap;
+}
+.mat-card-arrow{
+  display:flex;align-items:center;padding:0 1rem 0 .5rem;
+  font-size:.9rem;color:var(--text-dim);flex-shrink:0;
+}
+
+/* color variants */
+.c-blue .mat-card-accent{background:var(--blue2)}
+.c-blue .mat-card-num{background:var(--blue-dim);color:var(--blue)}
+.c-blue .mat-card-arrow{color:var(--blue)}
+
+.c-purple .mat-card-accent{background:var(--purple)}
+.c-purple .mat-card-num{background:rgba(167,139,250,.1);color:var(--purple)}
+.c-purple .mat-card-arrow{color:var(--purple)}
+
+.c-green .mat-card-accent{background:var(--green)}
+.c-green .mat-card-num{background:var(--green-dim);color:var(--green)}
+.c-green .mat-card-arrow{color:var(--green)}
+
+.c-orange .mat-card-accent{background:var(--orange)}
+.c-orange .mat-card-num{background:rgba(251,146,60,.1);color:var(--orange)}
+.c-orange .mat-card-arrow{color:var(--orange)}
+
+.c-red .mat-card-accent{background:var(--red)}
+.c-red .mat-card-num{background:rgba(248,113,113,.1);color:var(--red)}
+.c-red .mat-card-arrow{color:var(--red)}
+
+.c-gold .mat-card-accent{background:var(--gold2)}
+.c-gold .mat-card-num{background:var(--gold-dim);color:var(--gold)}
+.c-gold .mat-card-arrow{color:var(--gold)}
+
+/* tag colors */
+.tag-blue{background:var(--blue-dim);color:var(--blue)}
+.tag-green{background:var(--green-dim);color:var(--green)}
+.tag-red{background:rgba(248,113,113,.1);color:var(--red)}
+.tag-purple{background:rgba(167,139,250,.1);color:var(--purple)}
+.tag-gold{background:var(--gold-dim);color:var(--gold)}
+.tag-orange{background:rgba(251,146,60,.1);color:var(--orange)}
+
+/* ── MOCK EXAM CARD (special) ── */
+.mock-card{
+  background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(74,158,255,.06));
+  border:1px solid rgba(240,192,64,.25);
+  border-radius:12px;
+  padding:1.2rem 1.2rem;
+  text-decoration:none;
+  display:block;
+  transition:all .2s;
+  margin:0 1.2rem;
+}
+.mock-card:active{transform:scale(.98);opacity:.9}
+.mock-card-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;color:var(--gold);font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;
+  background:var(--gold-dim);border:1px solid rgba(240,192,64,.2);
+  display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:.7rem;
+}
+.mock-card-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:1.05rem;font-weight:700;color:var(--text);
+  margin-bottom:.4rem;
+}
+.mock-card-desc{font-size:.8rem;color:var(--text-muted);line-height:1.65;margin-bottom:.9rem}
+.mock-card-stats{display:flex;gap:.5rem;flex-wrap:wrap}
+.mock-stat{
+  background:rgba(17,24,39,.6);border:1px solid var(--border);
+  border-radius:8px;padding:5px 10px;
+  font-size:.72rem;color:var(--text-muted);
+}
+.mock-stat strong{color:var(--gold);font-family:'JetBrains Mono',monospace}
+.mock-cta{
+  margin-top:1rem;
+  background:linear-gradient(135deg,var(--gold2),#d4920a);
+  border-radius:8px;padding:12px;text-align:center;
+  font-size:.9rem;font-weight:700;color:#000;
+  font-family:'Noto Sans JP',sans-serif;
+}
+
+/* ── PROGRESS TRACKER ── */
+.progress-section{
+  margin:0 1.2rem 1.5rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1rem 1.2rem;
+}
+.progress-title{
+  font-size:.7rem;color:var(--gold);font-weight:700;
+  letter-spacing:.1em;margin-bottom:.9rem;
+  font-family:'JetBrains Mono',monospace;text-transform:uppercase;
+}
+.progress-items{display:flex;flex-direction:column;gap:.6rem}
+.progress-item{display:flex;align-items:center;gap:.7rem}
+.progress-item-label{font-size:.78rem;color:var(--text-muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress-bar-bg{flex:2;height:6px;background:var(--surface2);border-radius:6px;overflow:hidden}
+.progress-bar-inner{height:100%;border-radius:6px;transition:width 1s ease}
+.pb-blue{background:linear-gradient(90deg,var(--blue2),#60a5fa)}
+.pb-purple{background:linear-gradient(90deg,var(--purple),#c4b5fd)}
+.pb-green{background:linear-gradient(90deg,var(--green),#6ee7b7)}
+.pb-orange{background:linear-gradient(90deg,var(--orange),#fed7aa)}
+.pb-red{background:linear-gradient(90deg,var(--red),#fca5a5)}
+.progress-pct{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text-dim);min-width:28px;text-align:right}
+.progress-note{font-size:.72rem;color:var(--text-dim);margin-top:.7rem;line-height:1.6}
+
+/* ── STUDY TIP ── */
+.tip-card{
+  margin:0 1.2rem 1.5rem;
+  background:rgba(74,158,255,.06);
+  border:1px solid rgba(74,158,255,.2);
+  border-radius:12px;
+  padding:1rem 1.2rem;
+}
+.tip-label{font-size:.65rem;color:var(--blue);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem}
+.tip-text{font-size:.82rem;color:#a8c0e0;line-height:1.75}
+.tip-steps{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.tip-step{display:flex;gap:.5rem;align-items:flex-start}
+.tip-step-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:700;
+  background:var(--blue-dim);color:var(--blue);
+  border-radius:50%;width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.tip-step-text{font-size:.8rem;color:#a8c0e0;line-height:1.6}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;padding:1.5rem 1.2rem;
+  font-size:.72rem;color:var(--text-dim);line-height:1.8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">IVEC</div>
+  <div class="header-title">アーキテクトクラス｜<span>学習教材 TOP</span></div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Study Materials</div>
+  <div class="hero-title">IVECアーキテクトクラス<br>学習教材ポータル</div>
+  <div class="hero-sub">シラバスVer.3.2.0対応｜スマホ学習最適化版</div>
+</div>
+
+<!-- EXAM INFO -->
+<div class="exam-info">
+  <div class="exam-info-title">📋 試験概要</div>
+  <div class="exam-chips">
+    <div class="chip">形式：<strong>CBT（全国340カ所以上）</strong></div>
+    <div class="chip">実施：<strong>5月・11月</strong></div>
+    <div class="chip">結果：<strong>試験後約2ヶ月</strong></div>
+    <div class="chip">構成：<strong>大問4問＋専門テスト1問</strong></div>
+    <div class="chip">専門：<strong>自動化 / IoT / セキュリティ（選択）</strong></div>
+  </div>
+</div>
+
+<!-- CHAPTER 4 -->
+<div class="section-title">📚 第4章 — 汎用テスト知識・スキル</div>
+<div class="card-grid">
+
+  <a href="ivec_architect_4_1_mobile.html" class="mat-card c-blue">
+    <div class="mat-card-accent"></div>
+    <div class="mat-card-body">
+      <div class="mat-card-header">
+        <span class="mat-card-num">4.1</span>
+        <span class="mat-card-title">テスト要求分析</span>
+      </div>
+      <div class="mat-card-desc">テスト要求の準備・獲得・分析・成果物作成・検証。カバレッジとトレーサビリティの確保。</div>
+      <div class="mat-card-tags">
+        <span class="tag tag-blue">解説 5節</span>
+        <span class="tag tag-green">問題集 15問</span>
+        <span class="tag tag-gold">一問一答 20問</span>
+      </div>
+    </div>
+    <div class="mat-card-arrow">›</div>
+  </a>
+
+  <a href="ivec_architect_4_2_mobile.html" class="mat-card c-purple">
+    <div class="mat-card-accent"></div>
+    <div class="mat-card-body">
+      <div class="mat-card-header">
+        <span class="mat-card-num">4.2</span>
+        <span class="mat-card-title">テストアーキテクチャ設計</span>
+      </div>
+      <div class="mat-card-desc">アーキテクチャスタイルの選択・QCDMM分析・テスト計画書作成。全11節を網羅。</div>
+      <div class="mat-card-tags">
+        <span class="tag tag-purple">解説 11節</span>
+        <span class="tag tag-green">問題集 18問</span>
+        <span class="tag tag-gold">一問一答 22問</span>
+      </div>
+    </div>
+    <div class="mat-card-arrow">›</div>
+  </a>
+
+  <a href="ivec_architect_4_3_mobile.html" class="mat-card c-green">
+    <div class="mat-card-accent"></div>
+    <div class="mat-card-body">
+      <div class="mat-card-header">
+        <span class="mat-card-num">4.3</span>
+        <span class="mat-card-title">テスト評価</span>
+      </div>
+      <div class="mat-card-desc">テスト報告書の準備・活動分析・達成率評価・改善策検討・評価報告書の作成と開示。</div>
+      <div class="mat-card-tags">
+        <span class="tag tag-green">解説 9節</span>
+        <span class="tag tag-green">問題集 18問</span>
+        <span class="tag tag-gold">一問一答 22問</span>
+      </div>
+    </div>
+    <div class="mat-card-arrow">›</div>
+  </a>
+
+</div>
+
+<!-- CHAPTER 5 -->
+<div class="section-title">🔬 第5章 — 専門テスト知識・スキル</div>
+<div class="card-grid">
+
+  <a href="ivec_architect_ch5_mobile.html" class="mat-card c-orange">
+    <div class="mat-card-accent"></div>
+    <div class="mat-card-body">
+      <div class="mat-card-header">
+        <span class="mat-card-num">5.1〜5.3</span>
+        <span class="mat-card-title">専門テスト（全3分野）</span>
+      </div>
+      <div class="mat-card-desc">テスト自動化（ROI・CI/CD連携）、IoT関連（社会的影響・脅威分析）、セキュリティテスト（STRIDE・LINDDUN・SDL）。</div>
+      <div class="mat-card-tags">
+        <span class="tag tag-blue">🤖 テスト自動化</span>
+        <span class="tag tag-green">📡 IoT関連</span>
+        <span class="tag tag-red">🔒 セキュリティ</span>
+      </div>
+      <div class="mat-card-tags" style="margin-top:.3rem">
+        <span class="tag tag-orange">問題集 24問</span>
+        <span class="tag tag-gold">一問一答 30問</span>
+      </div>
+    </div>
+    <div class="mat-card-arrow">›</div>
+  </a>
+
+</div>
+
+<!-- MOCK EXAM -->
+<div class="section-title">🎯 模擬試験</div>
+<a href="ivec_architect_mock_exam_mobile.html" class="mock-card">
+  <div class="mock-card-badge">MOCK EXAM</div>
+  <div class="mock-card-title">アーキテクトクラス 模擬試験</div>
+  <div class="mock-card-desc">実際の試験と同じシナリオ形式の大問4問。具体的なプロジェクト背景が与えられ、シラバスの知識を実務に当てはめて回答します。</div>
+  <div class="mock-card-stats">
+    <div class="mock-stat">大問数：<strong>4問</strong></div>
+    <div class="mock-stat">小問数：<strong>16問</strong></div>
+    <div class="mock-stat">時間：<strong>60分</strong></div>
+    <div class="mock-stat">形式：<strong>四択・複数選択・記述</strong></div>
+  </div>
+  <div class="mock-cta">▶ 模擬試験を開始する</div>
+</a>
+
+<!-- STUDY TIP -->
+<div class="section-title">💡 学習の進め方</div>
+<div class="tip-card">
+  <div class="tip-label">推奨学習ルート</div>
+  <div class="tip-steps">
+    <div class="tip-step">
+      <div class="tip-step-num">1</div>
+      <div class="tip-step-text"><strong style="color:var(--text)">解説タブで理解</strong>：各節のINPUT/OUTPUTと実施タスクを読む。「現場でやっていたこと」との対応を意識する。</div>
+    </div>
+    <div class="tip-step">
+      <div class="tip-step-num">2</div>
+      <div class="tip-step-text"><strong style="color:var(--text)">一問一答で確認</strong>：重要キーワードをタップして素早く確認。通勤・スキマ時間に最適。</div>
+    </div>
+    <div class="tip-step">
+      <div class="tip-step-num">3</div>
+      <div class="tip-step-text"><strong style="color:var(--text)">問題集で定着</strong>：四択→穴埋め→記述の順で。記述は「シラバスの用語で言語化」を意識する。</div>
+    </div>
+    <div class="tip-step">
+      <div class="tip-step-num">4</div>
+      <div class="tip-step-text"><strong style="color:var(--text)">模擬試験で応用</strong>：シナリオに自分の経験を重ね、シラバスの概念と実務を結びつける練習。</div>
+    </div>
+    <div class="tip-step">
+      <div class="tip-step-num">5</div>
+      <div class="tip-step-text"><strong style="color:var(--text)">公式過去問で最終確認</strong>：<a href="https://www.ivia.or.jp/item43/item38" style="color:var(--blue)">ivia.or.jp</a> の過去問・解答例で本番形式を体験する。</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="section-title">📊 教材カバレッジ</div>
+<div class="progress-section">
+  <div class="progress-title">シラバス全節カバー率</div>
+  <div class="progress-items">
+    <div class="progress-item">
+      <div class="progress-item-label">4.1 テスト要求分析</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-blue" style="width:100%"></div></div>
+      <div class="progress-pct">5/5節</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-item-label">4.2 テストアーキテクチャ設計</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-purple" style="width:100%"></div></div>
+      <div class="progress-pct">11/11節</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-item-label">4.3 テスト評価</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-green" style="width:100%"></div></div>
+      <div class="progress-pct">9/9節</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-item-label">5.1 テスト自動化</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-orange" style="width:100%"></div></div>
+      <div class="progress-pct">4/4節</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-item-label">5.2 IoT関連</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-green" style="width:100%"></div></div>
+      <div class="progress-pct">3/3節</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-item-label">5.3 セキュリティテスト</div>
+      <div class="progress-bar-bg"><div class="progress-bar-inner pb-red" style="width:100%"></div></div>
+      <div class="progress-pct">3/3節</div>
+    </div>
+  </div>
+  <div class="progress-note">✅ シラバスVer.3.2.0の全節（第4章25節＋第5章10節）を網羅しています。</div>
+</div>
+
+<footer>
+  IVEC アーキテクトクラス 学習教材<br>
+  シラバス Ver.3.2.0 対応｜スマホ学習最適化版<br>
+  <span style="color:var(--gold)">試験頑張ってください！💪</span>
+</footer>
+
+</body>
+</html>
